@@ -5,6 +5,7 @@ import AuthWrapper from '@/components/layout/auth-wrapper'
 import { Analytics } from "@vercel/analytics/react"
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -60,7 +61,10 @@ export default function RootLayout({
             >
               {children}
               <my-widget project="cm2yp2yp600028iy9zqhe47nx"></my-widget>
-              <script src="https://quickfeedwidgetlight.netlify.app/widget.js"></script>
+              <Script
+                src="https://quickfeedwidgetlight.netlify.app/widget.js"
+                strategy="afterInteractive"
+              />
               <Toaster />
             </ThemeProvider>
           </Provider>
