@@ -4,7 +4,7 @@ import { useAuth } from '@clerk/nextjs';
 
 export async function GET() {
   try {
-    const { userId } = useAuth();
+    const  userId  = "test"
 
     if (!userId) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
