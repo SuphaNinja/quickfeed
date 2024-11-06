@@ -1,5 +1,5 @@
 "use client"
-import PageWrapper from "@/components/wrapper/page-wrapper";
+
 import config from "@/config";
 import { SignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -12,10 +12,10 @@ export default function SignUpPage() {
     }
 
     return (
-        <PageWrapper >
+        <div >
             <div className="flex min-w-screen justify-center my-[5rem]">
-                <SignUp fallbackRedirectUrl="/" signInFallbackRedirectUrl="/dashboard" />
+                <SignUp fallbackRedirectUrl="/" signInFallbackRedirectUrl="/" />
             </div>
-        </PageWrapper>
+        </div>
     );
 }

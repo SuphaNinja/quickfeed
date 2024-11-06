@@ -1,7 +1,7 @@
 import Provider from '@/app/provider'
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
-import AuthWrapper from '@/components/wrapper/auth-wrapper'
+import AuthWrapper from '@/components/layout/auth-wrapper'
 import { Analytics } from "@vercel/analytics/react"
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
@@ -59,6 +59,8 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               {children}
+              <my-widget project="cm2yp2yp600028iy9zqhe47nx"></my-widget>
+              <script src="https://quickfeedwidgetlight.netlify.app/widget.js"></script>
               <Toaster />
             </ThemeProvider>
           </Provider>

@@ -4,7 +4,7 @@ export type userCreateProps = z.infer<typeof userCreateSchema>;
 
 const userCreateSchema = z.object({
   email: z.string().email({ message: "Invalid email" }).describe("user email"),
-  fullName: z
+  first_name: z
     .string()
     .regex(/^[a-zA-Z]+$/, { message: "First name must only contain letters" })
     .min(3, { message: "First name is required" })

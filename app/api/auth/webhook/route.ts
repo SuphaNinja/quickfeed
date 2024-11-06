@@ -4,6 +4,7 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
   const wh = new Webhook(WEBHOOK_SECRET);
 
   let evt: WebhookEvent;
-
+  
   // Verify the payload with the headers
   try {
     evt = wh.verify(body, {
@@ -50,11 +51,9 @@ export async function POST(req: Request) {
       status: 400,
     });
   }
-
   // Get the ID and type
   const { id } = evt.data;
   const eventType = evt.type;
-
 
   switch (eventType) {
     case "user.created":

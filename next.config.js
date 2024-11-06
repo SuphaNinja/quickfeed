@@ -27,6 +27,6 @@ const nextConfig = {
       port: '',
       pathname: '/**'
     }]
-  }
+  },
 };
 module.exports = nextConfig;
