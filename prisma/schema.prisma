@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model payments {
+  id               Int      @id @default(autoincrement())
+  created_time     DateTime @default(now())
+  stripe_id        String
+  email            String
+  amount           String
+  payment_time     String
+  payment_date     String
+  currency         String
+  userId          String
+  customer_details String
+  payment_intent   String
+}
+
+model subscriptions {
+  id                        Int      @id @default(autoincrement())
+  created_time              DateTime @default(now())
+  subscription_id           String
+  stripe_userId            String
+  status                    String
+  start_date                String
+  end_date                  String?
+  plan_id                   String
+  default_payment_method_id String?
+  email                     String
+  userId                   String
+}
+
+model subscriptions_plans {
+  id           Int      @id @default(autoincrement())
+  created_time DateTime @default(now())
+  plan_id      String
+  name         String
+  description  String
+  amount       String
+  currency     String
+  interval     String
+}
+
+model invoices {
+  id              Int      @id @default(autoincrement())
+  created_time    DateTime @default(now())
+  invoice_id      String
+  subscription_id String
+  amount_paid     String
+  amount_due      String?
+  currency        String
+  status          String
+  email           String
+  userId         String?
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  first_name        String?
+  last_name         String?
+  email             String   @unique
+  profileImageUrl   String?
+  role              String   @default("user")
+  userId            String   @unique
+  subscription      String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  projectRoomsUser  ProjectRoomUser[]
+}
+
+model ProjectRoom {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  url             String
+  inviteUrl       String?
+  visitor         Int @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  users           ProjectRoomUser[]
+  analyses        Analysis[]
+  tasks           Task[]
+  feedbacks       Feedback[]
+}
+
+model ProjectRoomUser {
+  id              String     @id @default(cuid())
+  user            User       @relation(fields: [userId], references: [userId])
+  userId          String
+  fullName        String
+  email           String
+  image           String?
+  projectRoom     ProjectRoom @relation(fields: [projectRoomId], references: [id], onDelete: Cascade)
+  projectRoomId   String
+  role            String     // e.g., "admin", "member", "viewer"
+  assignedTasks   Task[]     @relation("AssignedTasks")
+  createdTasks    Task[]     @relation("CreatedTasks")
+
+  createdAt       DateTime   @default(now())
+  @@unique([userId, projectRoomId])
+}
+
+model Task {
+  id              String         @id @default(cuid())
+  title           String?
+  description     String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deadline        DateTime?
+  status          String          @default("Pending")
+  priority        String       
+  assignee        ProjectRoomUser @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  assigneeId      String
+  assignor        ProjectRoomUser @relation("CreatedTasks", fields: [assignorId], references: [id])
+  assignorId      String
+  projectRoom     ProjectRoom    @relation(fields: [projectRoomId], references: [id])
+  projectRoomId   String
+}
+
+model Feedback {
+  id              String   @id @default(cuid())
+  projectRoom     ProjectRoom  @relation(fields: [projectRoomId], references: [id], onDelete: Cascade)
+  projectRoomId   String
+  message         String
+  rating          Int
+  name            String?
+  upvotes         Int      @default(0)
+  downvotes       Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  @@index([projectRoomId])
+}
+
+model Analysis {
+  id                String   @id @default(cuid())
+  title             String
+  description       String
+  overallRating     Float
+  createdBy         String
+  projectRoom       ProjectRoom @relation(fields: [projectRoomId], references: [id], onDelete: Cascade)
+  projectRoomId     String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  ratingDistribution RatingDistribution?
+  sentimentBreakdown SentimentBreakdown?
+  topIssues          TopIssue[]
+  ratingTrends       RatingTrend[]
+  keywordAnalyses    KeywordAnalysis[]
+
+  @@index([projectRoomId])
+}
+
+model RatingDistribution {
+  id                   String   @id @default(cuid())
+  analysis             Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  analysisId           String   @unique
+  fiveStarCount        Int
+  fiveStarPercentage   Float
+  fiveStarKeywords     String[]
+  fourStarCount        Int
+  fourStarPercentage   Float
+  fourStarKeywords     String[]
+  threeStarCount       Int
+  threeStarPercentage  Float
+  threeStarKeywords    String[]
+  twoStarCount         Int
+  twoStarPercentage    Float
+  twoStarKeywords      String[]
+  oneStarCount         Int
+  oneStarPercentage    Float
+  oneStarKeywords      String[]
+}
+
+model SentimentBreakdown {
+  id                   String   @id @default(cuid())
+  analysis             Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  analysisId           String   @unique
+  positiveCount        Int
+  positivePercentage   Float
+  neutralCount         Int
+  neutralPercentage    Float
+  negativeCount        Int
+  negativePercentage   Float
+}
+
+model TopIssue {
+  id            String   @id @default(cuid())
+  analysis      Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  analysisId    String
+  issue         String
+  frequency     Int
+  averageRating Float
+}
+
+model RatingTrend {
+  id            String   @id @default(cuid())
+  analysis      Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  analysisId    String
+  date          DateTime
+  averageRating Float
+}
+
+model KeywordAnalysis {
+  id                String   @id @default(cuid())
+  analysis          Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  analysisId        String
+  keyword           String
+  frequency         Int
+  sentiment         String
+  associatedRatings Int[]
+}
