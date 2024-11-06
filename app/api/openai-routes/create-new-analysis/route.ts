@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
 import { prisma } from '@/lib/prisma';
+import { RatingTrend } from '@prisma/client';
 
 const apiKey = process.env.OPENAI_API_KEY;
 
@@ -140,7 +141,7 @@ export async function POST(request: Request) {
         title: result.title,
         description: result.description,
         overallRating: result.overallRating,
-        createdBy: `${user.firstName} ${user.lastName}`,
+        createdBy: `${user.first_name} ${user.last_name}`,
         projectRoom: {
           connect: { id: projectId },
           },
@@ -174,20 +175,20 @@ export async function POST(request: Request) {
           }
         },
         topIssues: {
-          create: result.diagramData.topIssues.map(issue => ({
+          create: result.diagramData.topIssues.map((issue: { issue: any; frequency: any; averageRating: any; }) => ({
             issue: issue.issue,
             frequency: issue.frequency,
             averageRating: issue.averageRating,
           }))
         },
         ratingTrends: {
-          create: result.diagramData.ratingTrend.map(trend => ({
+          create: result.diagramData.ratingTrend.map((trend: { date: string | number | Date; averageRating: any; })  => ({
             date: new Date(trend.date),
             averageRating: trend.averageRating,
           }))
         },
         keywordAnalyses: {
-          create: result.diagramData.keywordAnalysis.map(keyword => ({
+          create: result.diagramData.keywordAnalysis.map((keyword: { keyword: any; frequency: any; sentiment: any; associatedRatings: any; }) => ({
             keyword: keyword.keyword,
             frequency: keyword.frequency,
             sentiment: keyword.sentiment,
