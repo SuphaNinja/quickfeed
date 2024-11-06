@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import NavBar from '@/components/container/navbar';
+import NavBar from '@/components/layout/navbar/navbar';
 import Link from 'next/link';
 import Stripe from 'stripe';
 
