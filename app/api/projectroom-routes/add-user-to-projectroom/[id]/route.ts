@@ -1,4 +1,4 @@
-/* import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { z } from 'zod';
 
@@ -32,4 +32,4 @@ export async function POST(
         console.error('Error adding user to project room:', error);
         return NextResponse.json({ error: "Failed to add user to project room" }, { status: 500 });
     }
-} */
+}
