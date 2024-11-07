@@ -1,13 +1,15 @@
 'use client'
 
-import { useAuth } from '@/providers/QueryProvider'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LayoutDashboard, MessageSquare, BarChart, CheckSquare, Folder, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
+import { Skeleton } from "@/components/ui/skeleton"
 
 const tabs = [
     { name: 'Dashboard', icon: LayoutDashboard },
@@ -23,16 +25,20 @@ interface DashboardSidebarProps {
 }
 
 export default function Component({ projectRoom, setActiveTab }: DashboardSidebarProps) {
-    const  currentUser  = ["useAuth();"]
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [selectedProject, setSelectedProject] = useState(projectRoom);
 
+    const { data: currentUser, isLoading, isSuccess } = useQuery({
+        queryKey: ["currentUser"],
+        queryFn: () => axios.get("/api/user-routes/get-current-user")
+    })
+
     const handleProjectChange = (projectRoomId: string) => {
-        const selected = currentUser.projectRoomsUser.find(user => user.projectRoomId === projectRoomId);
+        const selected = currentUser?.data.projectRoomsUser.find(user => user.projectRoomId === projectRoomId);
         if (selected) {
             setSelectedProject(selected.projectRoom);
-            router.push(`/pages/dashboard/${projectRoomId}`);
+            router.push(`/dashboard/${projectRoomId}`);
         }
     }
 
@@ -40,13 +46,31 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
         <>
             <header className="p-6 border-b border-neutral-900">
                 <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
-                        <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.firstName} />
-                        <AvatarFallback className="text-lg">{currentUser?.firstName?.[0]}{currentUser?.lastName?.[0]}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <p className="font-semibold text-lg">{currentUser?.firstName} {currentUser?.lastName}</p>
-                        <p className="text-sm text-muted-foreground">{currentUser?.email}</p>
+                    {isLoading ? (
+                        <Skeleton className="h-12 w-12 rounded-full" />
+                    ) : (
+                        <Avatar className="h-12 w-12">
+                            <AvatarFallback className="text-lg">
+                                {currentUser?.data.first_name?.[0]}{currentUser?.data.last_name?.[0]}
+                            </AvatarFallback>
+                        </Avatar>
+                    )}
+                    <div className="flex-1 min-w-0">
+                        {isLoading ? (
+                            <div className="space-y-2">
+                                <Skeleton className="h-5 w-32" />
+                                <Skeleton className="h-4 w-24" />
+                            </div>
+                        ) : (
+                            <>
+                                <p className="font-semibold text-lg truncate">
+                                    {currentUser?.data.first_name} {currentUser?.data.last_name}
+                                </p>
+                                <p className="text-sm text-muted-foreground truncate">
+                                    {currentUser?.data.email}
+                                </p>
+                            </>
+                        )}
                     </div>
                 </div>
             </header>
@@ -70,15 +94,17 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
                 </ul>
             </nav>
             <div className="p-4">
-                {currentUser.projectRoomsUser.length > 0 ? (
+                {isLoading ? (
+                    <Skeleton className="h-10 w-full" />
+                ) : currentUser?.data.projectRoomsUser.length > 0 ? (
                     <Select onValueChange={handleProjectChange} value={selectedProject?.id}>
-                        <SelectTrigger className="w-full bg-[#F8F9FA] border-neutral-900 dark:bg-[#09090B]">
-                            <SelectValue>
+                        <SelectTrigger className="w-full bg-[#F8F9FA] border-neutral-900 text-white dark:bg-[#09090B]">
+                            <SelectValue className='text-wh'>
                                 {selectedProject?.title || "Select a project"}
                             </SelectValue>
                         </SelectTrigger>
                         <SelectContent className='bg-[#F8F9FA] dark:bg-[#09090B]'>
-                            {currentUser.projectRoomsUser.map((user) => (
+                            {isSuccess && currentUser.data.projectRoomsUser.map((user) => (
                                 <SelectItem key={user.projectRoomId} value={user.projectRoomId} className='bg-[#F8F9FA] dark:bg-[#09090B]'>
                                     {user.projectRoom.title}
                                 </SelectItem>

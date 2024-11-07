@@ -4,9 +4,19 @@ import { CreditCard, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { ToggleTheme } from "@/components/ui/ToggleTheme";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 
 export default function NavBar() {
+
+
+    const { data: currentUser, isLoading, isSuccess  } = useQuery({
+        queryKey: ["currentUser"],
+        queryFn: () => axios.get ("/api/user-routes/get-current-user")
+    })
+
+    console.log(currentUser)
     return (
         <header className="w-full transition-all z-[999]">
             <div className="flex items-center justify-between py-5">
@@ -29,11 +39,18 @@ export default function NavBar() {
                         </Link>
                     </SignedOut>
                     <SignedIn>
-                        <Button asChild variant={"link"}>
-                            <Link href={"/dashboard"}>
-                                Dashboard
-                            </Link>
-                        </Button>
+                        {isSuccess && (
+                            <Button asChild variant={"link"}>
+                                <Link 
+                                    href={currentUser?.data.projectRoomsUser.length > 0 ? 
+                                        `/dashboard/${currentUser?.data.projectRoomsUser[0].projectRoomId}`
+                                        : "/create-new-project"
+                                        }
+                                >
+                                    Dashboard
+                                </Link>
+                            </Button>
+                        )}
                         <ToggleTheme />
                         <Link href={"/payments"} className="cursor-pointer">
                             <button className="p-1 bg-[#303030] rounded-full border-[1px] border-[#606060]">

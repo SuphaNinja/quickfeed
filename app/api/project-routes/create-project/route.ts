@@ -1,20 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-
+import { auth } from '@clerk/nextjs/server';
 
 export async function POST(request: NextRequest) {
   try {
-
-    const { title, description, url, userId } = await request.json();
+    const { userId } = await auth();
+    const { title, description, url } = await request.json();
 
     if (!title || !description || !url) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    if (!userId) {
+      return NextResponse.json({ error: "Unathorized access, userId not provided" }, { status: 401 });
+    }
+
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
-        where: { id: userId },
+        where: { userId: userId },
         select: { id: true, first_name: true, last_name: true, email: true, profileImageUrl: true }
       });
 
@@ -32,7 +36,7 @@ export async function POST(request: NextRequest) {
               userId: userId,
               first_name: user.first_name || "",
               last_name: user.last_name || "",
-              email: user.email,
+              email: user.email || "",
               image: user.profileImageUrl,
               role: "admin"
             }

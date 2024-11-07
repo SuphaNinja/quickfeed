@@ -26,14 +26,14 @@ model subscriptions {
   id                        Int      @id @default(autoincrement())
   created_time              DateTime @default(now())
   subscription_id           String
-  stripe_userId            String
+  stripe_userId             String
   status                    String
   start_date                String
   end_date                  String?
   plan_id                   String
   default_payment_method_id String?
   email                     String
-  userId                   String
+  userId                    String
 }
 
 model subscriptions_plans {
@@ -64,7 +64,7 @@ model User {
   id                Int      @id @default(autoincrement())
   first_name        String?
   last_name         String?
-  email             String   @unique
+  email             String?
   profileImageUrl   String?
   role              String   @default("user")
   userId            String   @unique

@@ -24,8 +24,8 @@ function Members({ projectRoom }: DashboardHeaderProps) {
         }
     }
 
-    const getInitials = (firstName: string, lastName: string) => {
-        return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+    const getInitials = (first_name: string, last_name: string) => {
+        return `${first_name[0] || ''}${last_name[0] || ''}`.toUpperCase();
     }
 
     return (
@@ -50,11 +50,11 @@ function Members({ projectRoom }: DashboardHeaderProps) {
                     >
                         <Avatar className="h-8 w-8 bg-zinc-800">
                             <AvatarFallback className="text-sm">
-                                {getInitials(user.fullName[0], user.fullName[1])}
+                                {getInitials(user.first_name[0], user.first_name[1])}
                             </AvatarFallback>
                         </Avatar>
                         <span className="flex-1 text-sm">
-                            {user.fullName}
+                            {user.first_name}{user.last_name}
                         </span>
                         {user.role && (
                             <Badge variant="secondary" className={`${getRoleColor(user.role)} border-0`}>

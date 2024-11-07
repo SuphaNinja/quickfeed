@@ -1,9 +1,8 @@
 "server only";
 
 import { clerkClient } from "@clerk/nextjs/server";
-import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
 import config from "@/tailwind.config";
+import { prisma } from "@/lib/prisma";
 
 export const isAuthorized = async (
   userId: string
@@ -24,33 +23,18 @@ export const isAuthorized = async (
     };
   }
 
-  const cookieStore = await cookies();
-
-  const supabase = createServerClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-
   try {
-    const { data, error } = await supabase
-      .from("subscriptions")
-      .select("*")
-      .eq("userId", userId);
+      const subscribed = await prisma.subscriptions.findMany({
+      where: {userId: userId}
+    })
 
-    if (error?.code)
+    if (!subscribed)
       return {
         authorized: false,
-        message: error.message,
+        message: "Unexpected eroor, please try again later!",
       };
 
-    if (data && data[0].status === "active") {
+    if (subscribed && subscribed[0].status === "active") {
       return {
         authorized: true,
         message: "User is subscribed",
@@ -64,7 +48,7 @@ export const isAuthorized = async (
   } catch (error: any) {
     return {
       authorized: false,
-      message: error.message,
+      message: "Unexpected eroor, please try again later!",
     };
   }
 };

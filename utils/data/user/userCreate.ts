@@ -8,7 +8,6 @@ export const userCreate = async ({
   email,
   first_name,
   last_name,
-  profile_image_url,
   userId,
 }: userCreateProps) => {
   const cookieStore = await cookies();
@@ -33,7 +32,6 @@ export const userCreate = async ({
           email,
           first_name,
           last_name,
-          profile_image_url,
           userId,
         },
       ])

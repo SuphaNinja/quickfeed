@@ -9,7 +9,6 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-
   if (!WEBHOOK_SECRET) {
     throw new Error(
       "Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local"
@@ -21,7 +20,6 @@ export async function POST(req: Request) {
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
-
   // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
     return new Response("Error occured -- no svix headers", {
@@ -29,10 +27,12 @@ export async function POST(req: Request) {
     });
   }
 
+
+
   // Get the body
   const payload = await req.json();
   const body = JSON.stringify(payload);
-
+  console.log("payload INCOMING:::::", payload)
   // Create a new SVIX instance with your secret.
   const wh = new Webhook(WEBHOOK_SECRET);
 
@@ -58,12 +58,14 @@ export async function POST(req: Request) {
   switch (eventType) {
     case "user.created":
       try {
-        await userCreate({
-          email: payload?.data?.email_addresses?.[0]?.email_address,
-          first_name: payload?.data?.first_name,
-          last_name: payload?.data?.last_name,
-          profile_image_url: payload?.data?.profile_image_url,
-          userId: payload?.data?.id,
+        await prisma.user.create({
+          data: {
+            email: payload?.data?.email_addresses?.[0]?.email_address,
+            first_name: payload.data.first_name ?? "",
+            last_name: payload.data.last_name ?? "",
+            userId: payload?.data?.id,
+          }
+          
         });
 
         return NextResponse.json({
@@ -80,12 +82,14 @@ export async function POST(req: Request) {
 
     case "user.updated":
       try {
-        await userUpdate({
-          email: payload?.data?.email_addresses?.[0]?.email_address,
-          first_name: payload?.data?.first_name,
-          last_name: payload?.data?.last_name,
-          profile_image_url: payload?.data?.profile_image_url,
-          userId: payload?.data?.id,
+        await prisma.user.update({
+          where: {userId: payload?.data?.id},
+          data: {
+            email: payload?.data?.email_addresses?.[0]?.email_address,
+            first_name: payload.data.first_name ?? "",
+            last_name: payload.data.last_name ?? "",
+            userId: payload?.data?.id,
+          }
         });
 
         return NextResponse.json({

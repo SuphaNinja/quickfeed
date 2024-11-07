@@ -7,7 +7,6 @@ export const userUpdate = async ({
   email,
   first_name,
   last_name,
-  profile_image_url,
   userId,
 }: userUpdateProps) => {
   const cookieStore = await cookies();
@@ -32,7 +31,6 @@ export const userUpdate = async ({
           email,
           first_name,
           last_name,
-          profile_image_url,
           userId,
         },
       ])

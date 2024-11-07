@@ -13,7 +13,7 @@ if (config.auth.enabled) {
 }
 
 const isProtectedRoute = config.auth.enabled
-  ? createRouteMatcher(["/dashboard(.*)"])
+  ? createRouteMatcher(["/dashboard(.*)", "/create-new-project"])
   : () => false;
 
 export default function middleware(req: any) {

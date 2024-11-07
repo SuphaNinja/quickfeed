@@ -6,7 +6,7 @@ import {  useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { Skeleton } from '@/components/ui/skeleton'
 import FeedbackItem from './FeedbackItem'
-import { FilterButtons, FilterType, SortSelect } from './FilterAndSort'
+import { FilterButtons, FilterType, SortSelect, filterFeedback, sortFeedback, sortByDate } from './FilterAndSort'
 
 export interface Feedback {
     id: string
@@ -19,40 +19,6 @@ export interface Feedback {
 }
 
 type SortType = "newest" | "oldest" | "last7days" | "last30days";
-
-function filterFeedback(feedback: Feedback, filter: FilterType) {
-    if (filter === "all") return true;
-    if (filter === "bad" && (feedback.rating === 1 || feedback.rating === 2)) return true;
-    if (filter === "okay" && feedback.rating === 3) return true;
-    if (filter === "good" && (feedback.rating === 4 || feedback.rating === 5)) return true;
-    return false;
-}
-
-function sortFeedback(feedback: Feedback, sort: SortType) {
-    if (!feedback.createdAt) return false;
-    const now = new Date();
-    const feedbackDate = new Date(feedback.createdAt);
-    if (sort === "last7days") {
-        return feedbackDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    }
-    if (sort === "last30days") {
-        return feedbackDate >= new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    }
-    return true;
-}
-
-function sortByDate(a: Feedback, b: Feedback, sort: SortType) {
-    if (!a.createdAt || !b.createdAt) return 0;
-
-    const dateA = new Date(a.createdAt);
-    const dateB = new Date(b.createdAt);
-
-    if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) return 0;
-
-    return sort === "newest"
-        ? dateB.getTime() - dateA.getTime()
-        : dateA.getTime() - dateB.getTime();
-}
 
 
 export default function Feedbacks({ projectRoomId }: { projectRoomId: string }) {
