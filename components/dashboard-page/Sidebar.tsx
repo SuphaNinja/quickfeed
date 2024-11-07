@@ -134,7 +134,7 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
                     <SidebarContent />
                 </SheetContent>
             </Sheet>
-            <aside className="hidden md:flex w-64 h-screen border-r border-neutral-900 flex-col bg-[#F8F9FA] dark:bg-[#09090B]">
+            <aside className="hidden md:flex w-[300px] h-screen border-r border-neutral-900 flex-col bg-[#F8F9FA] dark:bg-[#09090B]">
                 <SidebarContent />
             </aside>
         </>
