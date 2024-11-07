@@ -41,7 +41,7 @@ function DashboardPage() {
             </div>
         )
     }
-
+    
     return (
         <div>
             <div className="flex w-full h-screen">
@@ -53,15 +53,13 @@ function DashboardPage() {
                         <DashboardSidebar setActiveTab={setActiveTab} projectRoom={projectRoom} />
                     </div>
                     {activeTab === "Dashboard" && (
-                        <Dashboard projectRoom={projectRoom} />
+                        <Dashboard projectRoom={projectRoom?.data} />
                     )}
                     {activeTab === "Feedbacks" && (
-                        "Feedbacks"
-                        /* <Feedbacks projectRoom={projectRoom} /> */
+                        <Feedbacks projectRoom={projectRoom?.data} />
                     )}
                     {activeTab === "Analysis" && (
-                        "Analysis"
-                        /* <Analysis analyses={projectRoom?.data.analyses} /> */
+                        <Analysis projectRoom={projectRoom?.data} />
                     )}
                     {activeTab === "Tasks" && (
                         "Tasks"

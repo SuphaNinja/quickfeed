@@ -1,26 +1,6 @@
 import React from 'react'
+import { Feedback, Task, ProjectRoom } from '../Types';
 
-interface Feedback {
-    rating: number;
-    createdAt: Date
-}
-
-interface Task {
-    createdAt: Date;
-    status: string;
-}
-
-interface ProjectRoom {
-    data: {
-        title: string;
-        feedbacks: Feedback[];
-        tasks: Task[];
-    };
-}
-
-interface DashboardHeaderProps {
-    projectRoom: ProjectRoom;
-}
 
 const calculateTaskStats = (tasks: Task[]) => {
     const now = new Date();
@@ -83,9 +63,9 @@ const calculateRatingStats = (feedbacks: Feedback[]) => {
     };
 }
 
-function DashboardHeader({ projectRoom }: DashboardHeaderProps) {
-    const feedbacks = projectRoom?.data?.feedbacks || [];
-    const tasks = projectRoom?.data?.tasks || [];
+function DashboardHeader({ projectRoom }: {projectRoom: ProjectRoom}) {
+    const feedbacks = projectRoom?.feedbacks || [];
+    const tasks = projectRoom?.tasks || [];
 
     const { averageRating, goodPercentage } = calculateRatingStats(feedbacks);
     const { growth, growthPercentage } = calculateFeedbackGrowth(feedbacks);

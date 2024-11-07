@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (!user) {
-        throw new Error("User not found");
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
 
       const projectRoom = await tx.projectRoom.create({

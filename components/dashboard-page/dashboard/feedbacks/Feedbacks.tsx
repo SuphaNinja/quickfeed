@@ -29,7 +29,7 @@ export default function Feedbacks({ projectRoomId }: { projectRoomId: string }) 
         queryKey: ["feedbacks", projectRoomId],
         queryFn: () => axios.post("/api/projectroom-routes/feedbacks/get-all-feedbacks", { projectRoomId })
     })
-    const feedbacks = feedbackdata?.data.feedbacks || [];
+    const feedbacks: Feedback[] = feedbackdata?.data.feedbacks || [];
 
     const filteredAndSortedFeedbacks = feedbacks
         .filter((feedback) => filterFeedback(feedback, filter))
@@ -52,7 +52,7 @@ export default function Feedbacks({ projectRoomId }: { projectRoomId: string }) 
                 <SortSelect sort={sort} setSort={setSort}/>
             </div>
 
-            <ScrollArea className="h-[600px] pr-4">
+            <ScrollArea className="h-[500px] pr-4">
                 <div className="space-y-4">
                     {isLoading ? (
                         Array.from({ length: 5 }).map((_, index) => (
@@ -77,18 +77,20 @@ export default function Feedbacks({ projectRoomId }: { projectRoomId: string }) 
     )
 }
 
-const FeedbackSkeleton = () => (
-    <div className="p-4 rounded-lg bg-zinc-900/50">
-        <div className="flex items-start justify-between gap-4 mb-2">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-6 w-20" />
-        </div>
-        <div className="flex items-center justify-between">
-            <Skeleton className="h-4 w-1/3" />
-            <div className="flex items-center gap-2">
-                <Skeleton className="h-8 w-16" />
-                <Skeleton className="h-8 w-16" />
+function FeedbackSkeleton () {
+    return (
+        <div className="p-4 rounded-lg bg-zinc-900/50">
+            <div className="flex items-start justify-between gap-4 mb-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-6 w-20" />
+            </div>
+            <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-1/3" />
+                <div className="flex items-center gap-2">
+                    <Skeleton className="h-8 w-16" />
+                    <Skeleton className="h-8 w-16" />
+                </div>
             </div>
         </div>
-    </div>
-)
+    )
+}

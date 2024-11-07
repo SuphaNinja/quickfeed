@@ -3,13 +3,12 @@ import DashboardHeader from './DashboardHeader';
 import Members from './Members';
 import Feedbacks from './feedbacks/Feedbacks';
 import TopVotedFeedbacks from './TopVotedFeedbacks';
+import { ProjectRoom } from '../Types';
 
-export interface DashboardSidebarProps {
-  projectRoom: any;
-}
 
-function Dashboard({ projectRoom }: DashboardSidebarProps) {
-  const projectRoomId = projectRoom.data.id
+
+function Dashboard({ projectRoom }: { projectRoom: ProjectRoom }) {
+  const projectRoomId = projectRoom.id
   return (
     <div className=' md:px-24'>
       <DashboardHeader projectRoom={projectRoom} />

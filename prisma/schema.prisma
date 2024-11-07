@@ -64,7 +64,7 @@ model User {
   id                Int      @id @default(autoincrement())
   first_name        String?
   last_name         String?
-  email             String?
+  email             String   @unique
   profileImageUrl   String?
   role              String   @default("user")
   userId            String   @unique
@@ -101,7 +101,7 @@ model ProjectRoomUser {
   image           String?
   projectRoom     ProjectRoom @relation(fields: [projectRoomId], references: [id], onDelete: Cascade)
   projectRoomId   String
-  role            String     
+  role            String     @default("user")
   assignedTasks   Task[]     @relation("AssignedTasks")
   createdTasks    Task[]     @relation("CreatedTasks")
 

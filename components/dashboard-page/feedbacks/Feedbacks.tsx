@@ -1,7 +1,7 @@
 import React from 'react'
-import { DashboardSidebarProps } from '../dashboard/Dashboard'
+import { ProjectRoom } from '../Types'
 
-function Feedbacks({ projectRoom }: DashboardSidebarProps) {
+function Feedbacks({ projectRoom }: {projectRoom: ProjectRoom}) {
   return (
     <div>Feedbacks</div>
   )

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
 import { prisma } from '@/lib/prisma';
-import { RatingTrend } from '@prisma/client';
+import { auth } from '@clerk/nextjs/server';
 
 const apiKey = process.env.OPENAI_API_KEY;
 
@@ -57,22 +57,28 @@ export async function POST(request: Request) {
 
   try {
     const { projectId, feedbacks} = await request.json()
-    const userId = request.headers.get('x-user-id');
+    console.log("Feedbacks: ", feedbacks)
+    console.log("ProjectId: ", projectId)
+    const { userId } = await auth()
 
     if (!userId) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 })
+        return NextResponse.json({ error: "Unautorized, userId not provided" }, { status: 401 })
     }
 
     if (!feedbacks || !Array.isArray(feedbacks)) {
       return NextResponse.json({ error: "Invalid feedbacks data" }, { status: 400 })
     }
 
-    const user = await prisma.user.findUnique({
-        where: {userId: userId}
+    const user = await prisma.projectRoomUser.findFirst({
+      where: {userId: userId, projectRoomId: projectId}
     });
 
     if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 })
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+    
+     if (user.role !== "admin") {
+      return NextResponse.json({ error: "Unautorized creation of analysis, role not admin" }, { status: 401 })
     }
 
     const completion = await openai.chat.completions.create({
