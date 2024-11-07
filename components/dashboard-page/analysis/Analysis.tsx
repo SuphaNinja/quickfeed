@@ -10,8 +10,8 @@ import AnalysisCharts from './AnalysisCharts'
 
 
 export default function Analysis({ projectRoom }: { projectRoom: ProjectRoom } ) {
+ 
 
-  console.log(projectRoom)
   return (  
     <div className="space-y-8 md:p-8">
       {projectRoom.analyses.length === 0 ? (
@@ -23,8 +23,12 @@ export default function Analysis({ projectRoom }: { projectRoom: ProjectRoom } )
   )
 }
 
-function CreateNewAnalysis({ feedbacks }: {feedbacks: Feedback[]}) {
+function CreateNewAnalysis({ feedbacks }: { feedbacks: Feedback[]}) {
   const { roomId } = useParams()
+  
+  const sendData = useMutation({
+    mutationFn: () => axios.post("/api/openai-routes/create-new-analysis", { feedbacks: feedbacks, projectId: roomId })
+  })
 
   if (feedbacks.length < 5) {
     return ( 
@@ -35,10 +39,7 @@ function CreateNewAnalysis({ feedbacks }: {feedbacks: Feedback[]}) {
       </div>
     )
   }
-
-  const sendData = useMutation({
-    mutationFn: () => axios.post("/api/openai-routes/create-new-analysis", { feedbacks: feedbacks, projectId: roomId })
-  })
+  
 
   return (
     <div>
