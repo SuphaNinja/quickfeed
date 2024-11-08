@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import { ProjectRoom, ProjectRoomUser } from '../Types'
 import { useAuth } from '@clerk/nextjs'
-import Members from '../dashboard/Members'
 import axios from 'axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from "@/components/ui/button"
@@ -30,7 +29,6 @@ function Tasks({ projectRoom }: { projectRoom: ProjectRoom }) {
     const user = users.find(user => user.userId === userId)
     return user?.role === 'admin'
   }
-
 
   const createNewTask = useMutation({
     mutationFn: (taskData: {
