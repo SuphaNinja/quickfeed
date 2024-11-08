@@ -28,7 +28,6 @@ export default function TaskEditor({ task }: TaskEditorProps) {
   const queryClient = useQueryClient()
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description)
-  const [deadline, setDeadline] = useState(task.deadline.split('T')[0]) // Format date for input
   const [priority, setPriority] = useState(task.priority)
   const [status, setStatus] = useState(task.status)
 
@@ -96,15 +95,7 @@ export default function TaskEditor({ task }: TaskEditorProps) {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="deadline">Deadline</Label>
-            <Input
-              id="deadline"
-              type="date"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
-            />
-          </div>
+          
           <div className="space-y-2">
             <Label htmlFor="priority">Priority</Label>
             <Select value={priority} onValueChange={setPriority}>
