@@ -44,8 +44,6 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
         }
     }
 
-  console.log(currentUser?.data.profileImageUrl)
-
     const SidebarContent = () => (
         <>
             <header className="p-6 border-b border-neutral-900">
