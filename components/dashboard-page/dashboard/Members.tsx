@@ -3,15 +3,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { UserPlus, Trash2 } from "lucide-react"
-
 import { ProjectRoom, ProjectRoomUser } from '../Types'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { useAuth } from '@clerk/nextjs'
-
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 function Members({ projectRoom }: { projectRoom: ProjectRoom} ) {
     const queryClient = useQueryClient()
@@ -47,20 +45,32 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom} ) {
     }
 
     const inviteUserMutation = useMutation({
-        mutationFn: (email: string) => axios.post('/api/projectroom-routes/add-user-to-projectroom', { email, projectRoomId: projectRoom.id }),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['projectRoom', projectRoom.id]})
-            setEmail('')
-            setError('')
-        },
+        mutationFn: (email: string) => axios.post('/api/projectroom-routes/dashboard/add-user-to-projectroom', { email, projectRoomId: projectRoom.id }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projectRoom', projectRoom.id]}),
         onError: (error: any) => {
             setError(error.response?.data?.error || 'An error occurred while inviting the user.')
         },
     })
 
     const deleteUserFromProject = useMutation({
-        mutationFn: (removeUserId: string) => axios.post("/api/projectroom-routes/remove-user-from-projectroom", { projectRoomId: projectRoom.id, removeUserId }),
+        mutationFn: (removeUserId: string) => axios.post("/api/projectroom-routes/dashboard/remove-user-from-projectroom", { projectRoomId: projectRoom.id, removeUserId }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projectRoom', projectRoom.id] }),
     })
+
+    const changeRoleOfUser = useMutation({
+        mutationFn: ({ email, role }: { email: string, role: string }) =>
+            axios.post("/api/projectroom-routes/dashboard/change-role-of-user", {
+                projectRoomId: projectRoom.id,
+                email,
+                role
+            }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['projectRoom', projectRoom.id] })
+        },
+    })
+    const handleRoleChange = (email: string , newRole: string) => {
+        changeRoleOfUser.mutate({ email, role: newRole })
+    }
 
     const handleInvite = () => {
         if (!validateEmail(email)) {
@@ -86,7 +96,7 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom} ) {
                             type="email"
                             placeholder="Enter email to invite"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => {setEmail(e.target.value) ,setError("")}}
                             className="max-w-xs"
                         />
                         <Button size="sm" onClick={handleInvite} disabled={inviteUserMutation.isPending}>
@@ -117,22 +127,37 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom} ) {
                         <span className="flex-1 text-sm">
                             {user.first_name} {user.last_name}
                         </span>
-                        {user.role && (
+                        {userId && user.role && !isUserAdmin(userId, users) ? (
                             <Badge variant="secondary" className={`${getRoleColor(user.role)} border-0`}>
                                 {user.role}
                             </Badge>
-                        )}
+                        ) : null}
                         {userId && isUserAdmin(userId, users) && user.userId !== userId && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-red-500 hover:text-red-700"
-                                onClick={() => handleDeleteUser(user.userId)}
-                                disabled={deleteUserFromProject.isPending}
-                                aria-label={`Delete ${user.first_name} ${user.last_name}`}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <>
+                                <Select
+                                    value={user.role || ''}
+                                    onValueChange={(newRole) => handleRoleChange(user.email, newRole)}
+                                    disabled={changeRoleOfUser.isPending}
+                                >
+                                    <SelectTrigger className={`w-[100px] h-6 px-2.5 border-0 ${getRoleColor(user.role)} hover:bg-opacity-80`}>
+                                        <SelectValue placeholder="Select role" className="text-xs font-medium" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="admin" className="text-xs">Admin</SelectItem>
+                                        <SelectItem value="user" className="text-xs">User</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-red-500 hover:text-red-700"
+                                    onClick={() => handleDeleteUser(user.userId)}
+                                    disabled={deleteUserFromProject.isPending}
+                                    aria-label={`Delete ${user.first_name} ${user.last_name}`}
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </>
                         )}
                     </div>
                 ))}

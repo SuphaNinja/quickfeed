@@ -62,8 +62,7 @@ function DashboardPage() {
                         <Analysis projectRoom={projectRoom?.data} />
                     )}
                     {activeTab === "Tasks" && (
-                        "Tasks"
-                        /* <Tasks projectRoom={projectRoom} /> */
+                        <Tasks projectRoom={projectRoom?.data} />
                     )}
                 </div>
             </div>

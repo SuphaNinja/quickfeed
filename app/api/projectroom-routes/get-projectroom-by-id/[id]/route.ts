@@ -21,8 +21,8 @@ export async function GET(
       include: {
         users: {
           include: {
-            assignedTasks: true,
-            createdTasks: true
+            assignedTasks: { orderBy: { createdAt: "desc" }},
+            createdTasks: { orderBy: { createdAt: "desc" }},
           }
         },
         analyses: {
@@ -32,10 +32,11 @@ export async function GET(
             topIssues: true,
             ratingTrends: true,
             keywordAnalyses: true
-          }
+          },
+          orderBy: { createdAt: "desc" }
         },
-        tasks: true, 
-        feedbacks: true
+        tasks: { orderBy: { createdAt: "desc" }}, 
+        feedbacks: { orderBy: { createdAt: "desc" }},
       }
     });
 

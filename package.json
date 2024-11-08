@@ -62,6 +62,7 @@
     "prisma": "^5.9.1",
     "react": "latest",
     "react-chartjs-2": "^5.2.0",
+    "react-datepicker": "^7.5.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "latest",
     "react-hook-form": "^7.51.3",

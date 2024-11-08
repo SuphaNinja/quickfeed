@@ -27,15 +27,15 @@ export async function POST(request: NextRequest) {
         })
 
         if (!userToBeRemoved) {
-            return NextResponse.json({ error: "The user you wanted to invite does not exist. Make sure they create an account first." }, { status: 404 });
+            return NextResponse.json({ error: "The user you wanted to remove does not exist." }, { status: 404 });
         }
         
         const userIsInRoom = await prisma.projectRoomUser.findFirst({
             where: {projectRoomId: projectRoomId, userId: userToBeRemoved.userId}
         })
 
-        if (userIsInRoom) {
-            return NextResponse.json({ error: "The user already has access to this project" }, { status: 400 });
+        if (!userIsInRoom) {
+            return NextResponse.json({ error: "The user does not exist in this project" }, { status: 400 });
         }
 
         await prisma.projectRoomUser.deleteMany({
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: `User has been removed from the project` }, { status: 200 });
         
     } catch (error) {
-        console.error('Error adding user to project room:', error);
-        return NextResponse.json({ error: "Failed to add user to project room" }, { status: 500 });
+        console.error('Error adding remove to project room:', error);
+        return NextResponse.json({ error: "Failed to remove user to project room" }, { status: 500 });
     }
 }
