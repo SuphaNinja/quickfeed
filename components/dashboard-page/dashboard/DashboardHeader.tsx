@@ -72,7 +72,7 @@ function DashboardHeader({ projectRoom }: {projectRoom: ProjectRoom}) {
     const { activeTasks, tasksAddedToday } = calculateTaskStats(tasks);
 
     return (
-        <div className="w-full flex-col pt-4 md:pt-16 px-4 md:px-8">
+        <div className="w-full flex-col pt-4 md:pt-12 px-4 md:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                 <div className='space-y-2 md:space-y-4 p-4 rounded-lg'>
                     <p className="text-gray-400 text-sm md:text-base">Positive rating</p>

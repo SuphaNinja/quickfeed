@@ -10,7 +10,7 @@ import { ProjectRoom } from '../Types';
 function Dashboard({ projectRoom }: { projectRoom: ProjectRoom }) {
   const projectRoomId = projectRoom.id
   return (
-    <div className=' md:px-24'>
+    <div className='md:px-24'>
       <DashboardHeader projectRoom={projectRoom} />
       <div className='grid md:grid-cols-2 mt-12 grid-cols-1 gap-6'>
         <div className='col-span-1'>
