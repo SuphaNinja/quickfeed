@@ -1,35 +1,7 @@
 "use client";
 
-<<<<<<< HEAD
-import React, { useState } from "react";
-import { ProjectRoom, ProjectRoomUser } from "../../../lib/Types";
-import { useAuth } from "@clerk/nextjs";
-import Members from "../dashboard/Members";
-import axios from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import "react-datepicker/dist/react-datepicker.css";
-import MyTasks from "./MyTasks";
-=======
 import React, { useState } from 'react'
-import { ProjectRoom, ProjectRoomUser } from '../Types'
+import { ProjectRoom, ProjectRoomUser } from '@/lib/Types'
 import { useAuth } from '@clerk/nextjs'
 import axios from 'axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -41,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import "react-datepicker/dist/react-datepicker.css"
 import MyTasks from './MyTasks'
->>>>>>> 371113b24ccb19f7703ed6638c4d3bf1cf17a05d
 
 function Tasks({ projectRoom }: { projectRoom: ProjectRoom }) {
   const queryClient = useQueryClient();
@@ -54,18 +25,11 @@ function Tasks({ projectRoom }: { projectRoom: ProjectRoom }) {
   const [assigneeId, setAssigneeId] = useState("");
 
   const isUserAdmin = (userId: string, users: ProjectRoomUser[]): boolean => {
-<<<<<<< HEAD
-    const user = users.find((user) => user.userId === userId);
-    return user?.role === "admin";
-  };
 
-  console.log(projectRoom);
-=======
     const user = users.find(user => user.userId === userId)
     return user?.role === 'admin'
   }
 
->>>>>>> 371113b24ccb19f7703ed6638c4d3bf1cf17a05d
   const createNewTask = useMutation({
     mutationFn: (taskData: {
       projectRoomId: string;
