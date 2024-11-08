@@ -33,7 +33,7 @@ function DashboardPage() {
         }),
         enabled: !!params.roomId
     })
-
+    
     if (isLoading) {
         return (
             <div className="fixed inset-0 flex items-center justify-center">

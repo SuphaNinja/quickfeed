@@ -18,7 +18,10 @@ export async function GET() {
         email: true,
         role: true,
         isSubscribed: true,
+<<<<<<< HEAD
         profileImageUrl: true,
+=======
+>>>>>>> 371113b24ccb19f7703ed6638c4d3bf1cf17a05d
         created_at: true,
         updated_at: true,
         projectRoomsUser: {

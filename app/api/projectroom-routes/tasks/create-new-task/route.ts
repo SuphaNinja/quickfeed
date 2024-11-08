@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 export async function POST(request: NextRequest) {
     try {
         const { userId } = await auth();
-        const { projectRoomId, title, description, deadline, priority, assigneeId } = await request.json();
+        const { projectRoomId, title, description, priority, assigneeId } = await request.json();
         
         if (!userId || !projectRoomId) {
             return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
@@ -34,7 +34,6 @@ export async function POST(request: NextRequest) {
             data: {
                 title: title,
                 description: description,
-                deadline: deadline && deadline,
                 priority: priority,
                 projectRoomId: projectRoomId,
                 assigneeId: assignee.id,
