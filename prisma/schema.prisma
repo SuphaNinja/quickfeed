@@ -9,170 +9,167 @@ datasource db {
 }
 
 model Subscription {
-  id                  Int    @id @default(autoincrement())
-  userId              String
-  stripeCustomerId    String
+  id                   Int     @id @default(autoincrement())
+  userId               String
+  stripeCustomerId     String
   stripeSubscriptionId String
-  subscribed          Boolean
+  subscribed           Boolean
 }
 
 model User {
-  id                Int      @id @default(autoincrement())
-  first_name        String?
-  last_name         String?
-  email             String   @unique
-  profileImageUrl   String?
-  role              String   @default("user")
-  userId            String   @unique
-  subscription      String?
-  isSubscribed      Boolean  @default(false)
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
-
-  projectRoomsUser  ProjectRoomUser[]
+  id               Int               @id @default(autoincrement())
+  first_name       String?
+  last_name        String?
+  email            String            @unique
+  profileImageUrl  String?
+  role             String            @default("user")
+  userId           String            @unique
+  subscription     String?
+  isSubscribed     Boolean           @default(false)
+  created_at       DateTime          @default(now())
+  updated_at       DateTime          @updatedAt
+  projectRoomsUser ProjectRoomUser[]
 }
 
 model ProjectRoom {
-  id              String   @id @default(cuid())
-  title           String
-  description     String
-  url             String
-  inviteUrl       String?
-  visitor         Int @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  users           ProjectRoomUser[]
-  analyses        Analysis[]
-  tasks           Task[]
-  feedbacks       Feedback[]
+  id          String            @id @default(cuid())
+  title       String
+  description String
+  url         String
+  inviteUrl   String?
+  visitor     Int               @default(0)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  analyses    Analysis[]
+  feedbacks   Feedback[]
+  users       ProjectRoomUser[]
+  tasks       Task[]
 }
 
 model ProjectRoomUser {
-  id              String     @id @default(cuid())
-  user            User       @relation(fields: [userId], references: [userId])
-  userId          String
-  first_name      String
-  last_name       String
-  email           String
-  image           String?
-  projectRoom     ProjectRoom @relation(fields: [projectRoomId], references: [id], onDelete: Cascade)
-  projectRoomId   String
-  role            String     @default("user")
-  assignedTasks   Task[]     @relation("AssignedTasks")
-  createdTasks    Task[]     @relation("CreatedTasks")
+  id            String      @id @default(cuid())
+  userId        String
+  first_name    String
+  last_name     String
+  email         String
+  image         String?
+  projectRoomId String
+  role          String      @default("user")
+  createdAt     DateTime    @default(now())
+  projectRoom   ProjectRoom @relation(fields: [projectRoomId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [userId])
+  assignedTasks Task[]      @relation("AssignedTasks")
+  createdTasks  Task[]      @relation("CreatedTasks")
 
-  createdAt       DateTime   @default(now())
   @@unique([userId, projectRoomId])
 }
 
 model Task {
-  id              String         @id @default(cuid())
-  title           String?
-  description     String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  deadline        DateTime?
-  status          String          @default("Pending")
-  priority        String       
-  assignee        ProjectRoomUser @relation("AssignedTasks", fields: [assigneeId], references: [id])
-  assigneeId      String
-  assignor        ProjectRoomUser @relation("CreatedTasks", fields: [assignorId], references: [id])
-  assignorId      String
-  projectRoom     ProjectRoom    @relation(fields: [projectRoomId], references: [id])
-  projectRoomId   String
+  id            String          @id @default(cuid())
+  title         String?
+  description   String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deadline      DateTime?
+  status        String          @default("Pending")
+  priority      String
+  assigneeId    String
+  assignorId    String
+  projectRoomId String
+  assignee      ProjectRoomUser @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  assignor      ProjectRoomUser @relation("CreatedTasks", fields: [assignorId], references: [id])
+  projectRoom   ProjectRoom     @relation(fields: [projectRoomId], references: [id])
 }
 
 model Feedback {
-  id              String   @id @default(cuid())
-  projectRoom     ProjectRoom  @relation(fields: [projectRoomId], references: [id], onDelete: Cascade)
-  projectRoomId   String
-  message         String
-  rating          Int
-  name            String?
-  upvotes         Int      @default(0)
-  downvotes       Int      @default(0)
-  createdAt       DateTime @default(now())
+  id            String      @id @default(cuid())
+  projectRoomId String
+  message       String
+  rating        Int
+  name          String?
+  upvotes       Int         @default(0)
+  downvotes     Int         @default(0)
+  createdAt     DateTime    @default(now())
+  projectRoom   ProjectRoom @relation(fields: [projectRoomId], references: [id], onDelete: Cascade)
 
   @@index([projectRoomId])
 }
 
 model Analysis {
-  id                String   @id @default(cuid())
-  title             String
-  description       String
-  overallRating     Float
-  createdBy         String
-  projectRoom       ProjectRoom @relation(fields: [projectRoomId], references: [id], onDelete: Cascade)
-  projectRoomId     String
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
+  id                 String              @id @default(cuid())
+  title              String
+  description        String
+  overallRating      Float
+  createdBy          String
+  projectRoomId      String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  projectRoom        ProjectRoom         @relation(fields: [projectRoomId], references: [id], onDelete: Cascade)
+  keywordAnalyses    KeywordAnalysis[]
   ratingDistribution RatingDistribution?
+  ratingTrends       RatingTrend[]
   sentimentBreakdown SentimentBreakdown?
   topIssues          TopIssue[]
-  ratingTrends       RatingTrend[]
-  keywordAnalyses    KeywordAnalysis[]
 
   @@index([projectRoomId])
 }
 
 model RatingDistribution {
-  id                   String   @id @default(cuid())
-  analysis             Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
-  analysisId           String   @unique
-  fiveStarCount        Int
-  fiveStarPercentage   Float
-  fiveStarKeywords     String[]
-  fourStarCount        Int
-  fourStarPercentage   Float
-  fourStarKeywords     String[]
-  threeStarCount       Int
-  threeStarPercentage  Float
-  threeStarKeywords    String[]
-  twoStarCount         Int
-  twoStarPercentage    Float
-  twoStarKeywords      String[]
-  oneStarCount         Int
-  oneStarPercentage    Float
-  oneStarKeywords      String[]
+  id                  String   @id @default(cuid())
+  analysisId          String   @unique
+  fiveStarCount       Int
+  fiveStarPercentage  Float
+  fiveStarKeywords    String[]
+  fourStarCount       Int
+  fourStarPercentage  Float
+  fourStarKeywords    String[]
+  threeStarCount      Int
+  threeStarPercentage Float
+  threeStarKeywords   String[]
+  twoStarCount        Int
+  twoStarPercentage   Float
+  twoStarKeywords     String[]
+  oneStarCount        Int
+  oneStarPercentage   Float
+  oneStarKeywords     String[]
+  analysis            Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
 }
 
 model SentimentBreakdown {
-  id                   String   @id @default(cuid())
-  analysis             Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
-  analysisId           String   @unique
-  positiveCount        Int
-  positivePercentage   Float
-  neutralCount         Int
-  neutralPercentage    Float
-  negativeCount        Int
-  negativePercentage   Float
+  id                 String   @id @default(cuid())
+  analysisId         String   @unique
+  positiveCount      Int
+  positivePercentage Float
+  neutralCount       Int
+  neutralPercentage  Float
+  negativeCount      Int
+  negativePercentage Float
+  analysis           Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
 }
 
 model TopIssue {
   id            String   @id @default(cuid())
-  analysis      Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
   analysisId    String
   issue         String
   frequency     Int
   averageRating Float
+  analysis      Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
 }
 
 model RatingTrend {
   id            String   @id @default(cuid())
-  analysis      Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
   analysisId    String
   date          DateTime
   averageRating Float
+  analysis      Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
 }
 
 model KeywordAnalysis {
   id                String   @id @default(cuid())
-  analysis          Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
   analysisId        String
   keyword           String
   frequency         Int
   sentiment         String
   associatedRatings Int[]
+  analysis          Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
 }
