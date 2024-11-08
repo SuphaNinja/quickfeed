@@ -50,7 +50,7 @@ export default function FeedBackList({ projectRoomId }: { projectRoomId: string 
                 <SortSelect sort={sort} setSort={setSort} />
             </div>
 
-            <div className="space-y-4 mt-6">
+            <div className="space-y-4 mt-67">
                 {isLoading ? (
                     Array.from({ length: 5 }).map((_, index) => (
                         <FeedbackSkeleton key={index} />
