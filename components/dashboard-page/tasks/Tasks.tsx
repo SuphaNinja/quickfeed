@@ -1,82 +1,98 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import { ProjectRoom, ProjectRoomUser } from '../Types'
-import { useAuth } from '@clerk/nextjs'
-import Members from '../dashboard/Members'
-import axios from 'axios'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import "react-datepicker/dist/react-datepicker.css"
-import MyTasks from './MyTasks'
+import React, { useState } from "react";
+import { ProjectRoom, ProjectRoomUser } from "../../../lib/Types";
+import { useAuth } from "@clerk/nextjs";
+import Members from "../dashboard/Members";
+import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import "react-datepicker/dist/react-datepicker.css";
+import MyTasks from "./MyTasks";
 
 function Tasks({ projectRoom }: { projectRoom: ProjectRoom }) {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
+  const users: ProjectRoomUser[] = projectRoom.users || [];
 
-  const queryClient = useQueryClient()
-  const { userId } = useAuth()
-  const users: ProjectRoomUser[] = projectRoom.users || []
-
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState('')
-  const [assigneeId, setAssigneeId] = useState('')
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState("");
+  const [assigneeId, setAssigneeId] = useState("");
 
   const isUserAdmin = (userId: string, users: ProjectRoomUser[]): boolean => {
-    const user = users.find(user => user.userId === userId)
-    return user?.role === 'admin'
-  }
+    const user = users.find((user) => user.userId === userId);
+    return user?.role === "admin";
+  };
 
-
+  console.log(projectRoom);
   const createNewTask = useMutation({
     mutationFn: (taskData: {
-      projectRoomId: string,
-      title: string,
-      description: string,
-      priority: string,
-      assigneeId: string
-    }) => axios.post('/api/projectroom-routes/tasks/create-new-task', taskData),
+      projectRoomId: string;
+      title: string;
+      description: string;
+      priority: string;
+      assigneeId: string;
+    }) => axios.post("/api/projectroom-routes/tasks/create-new-task", taskData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projectRoom', projectRoom.id] })
+      queryClient.invalidateQueries({
+        queryKey: ["projectRoom", projectRoom.id],
+      });
       // Reset form fields
-      setTitle('')
-      setDescription('')
-      setPriority('')
-      setAssigneeId('')
+      setTitle("");
+      setDescription("");
+      setPriority("");
+      setAssigneeId("");
     },
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     createNewTask.mutate({
       projectRoomId: projectRoom.id,
       title,
       description,
       priority,
-      assigneeId
-    })
-  }
+      assigneeId,
+    });
+  };
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Project Members</CardTitle>
-          <CardDescription>List of all members in this project room</CardDescription>
+          <CardDescription>
+            List of all members in this project room
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-        </CardContent>
+        <CardContent></CardContent>
       </Card>
       <MyTasks />
       {isUserAdmin(userId!, users) && (
         <Card>
           <CardHeader>
             <CardTitle>Assign New Task</CardTitle>
-            <CardDescription>Create a new task and assign it to a team member</CardDescription>
+            <CardDescription>
+              Create a new task and assign it to a team member
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -113,7 +129,11 @@ function Tasks({ projectRoom }: { projectRoom: ProjectRoom }) {
               </div>
               <div>
                 <Label htmlFor="assignee">Assign to</Label>
-                <Select value={assigneeId} onValueChange={setAssigneeId} required>
+                <Select
+                  value={assigneeId}
+                  onValueChange={setAssigneeId}
+                  required
+                >
                   <SelectTrigger id="assignee">
                     <SelectValue placeholder="Select team member" />
                   </SelectTrigger>
@@ -134,7 +154,7 @@ function Tasks({ projectRoom }: { projectRoom: ProjectRoom }) {
         </Card>
       )}
     </div>
-  )
+  );
 }
 
-export default Tasks
+export default Tasks;

@@ -2,13 +2,15 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LayoutDashboard, MessageSquare, BarChart, CheckSquare, Folder, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import Image from "next/image"
+import {UserButton} from "@clerk/nextjs"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const tabs = [
@@ -42,6 +44,8 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
         }
     }
 
+  console.log(currentUser?.data.profileImageUrl)
+
     const SidebarContent = () => (
         <>
             <header className="p-6 border-b border-neutral-900">
@@ -49,11 +53,14 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
                     {isLoading ? (
                         <Skeleton className="h-12 w-12 rounded-full" />
                     ) : (
-                        <Avatar className="h-12 w-12">
-                            <AvatarFallback className="text-lg">
-                                {currentUser?.data.first_name?.[0]}{currentUser?.data.last_name?.[0]}
-                            </AvatarFallback>
-                        </Avatar>
+                        <UserButton  appearance={{
+                            elements: {
+                              avatarBox: {
+                                width: '45px',
+                                height: '45px'
+                              }
+                            }
+                          }} />
                     )}
                     <div className="flex-1 min-w-0">
                         {isLoading ? (

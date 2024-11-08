@@ -1,10 +1,8 @@
-import React from 'react'
-import { ProjectRoom } from '../Types'
+import React from "react";
+import { ProjectRoom } from "../../../lib/Types";
 
-function Feedbacks({ projectRoom }: {projectRoom: ProjectRoom}) {
-  return (
-    <div>Feedbacks</div>
-  )
+function Feedbacks({ projectRoom }: { projectRoom: ProjectRoom }) {
+  return <div>Feedbacks</div>;
 }
 
-export default Feedbacks
+export default Feedbacks;
