@@ -1,62 +1,68 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-const allowedOrigins = ["https://quickfeedwidgetlight.netlify.app"];
-
-export async function POST(request: NextRequest): Promise<NextResponse> {
-  const origin = request.headers.get("origin");
-
-  if (origin && allowedOrigins.includes(origin)) {
-    const response = await handlePostRequest(request);
-    response.headers.set("Access-Control-Allow-Origin", origin);
-    response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-    response.headers.set("Access-Control-Allow-Headers", "Content-Type");
-
-    return response;
-  } else {
-    return NextResponse.json({ error: "CORS not allowed" }, { status: 403 });
+export async function POST(request: Request) {
+  // Handle preflight requests
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
   }
-}
 
-async function handlePostRequest(request: NextRequest): Promise<NextResponse> {
   try {
     const data = await request.json();
 
+    // Check if the project exists
     const project = await prisma.projectRoom.findUnique({
-      where: { id: data.projectRoomId },
+      where: { id: data.projectId },
     });
 
     if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+      return new NextResponse(JSON.stringify({ error: "Project not found" }), {
+        status: 404,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
     }
 
+    // Create the feedback
     const feedback = await prisma.feedback.create({
       data: {
-        projectRoomId: data.projectRoomId,
+        projectRoomId: data.projectId,
         name: data.name,
         message: data.message,
-        rating: data.rating,
+        rating: data.rating
       },
     });
 
-    return NextResponse.json(feedback, { status: 201 });
+    return new NextResponse(JSON.stringify(feedback), {
+      status: 201,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
+
   } catch (error) {
-    return NextResponse.json(
-      { error: 'An unknown error occurred during your request.' },
-      { status: 500 }
-    );
+    return new NextResponse(JSON.stringify({ error: 'An unknown error occurred during your request.' }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
   }
 }
 
-export async function OPTIONS(request: NextRequest): Promise<NextResponse> {
-  const origin = request.headers.get("origin");
-  if (origin && allowedOrigins.includes(origin)) {
-    const response = NextResponse.json({}, { status: 200 });
-    response.headers.set("Access-Control-Allow-Origin", origin);
-    response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-    response.headers.set("Access-Control-Allow-Headers", "Content-Type");
-    return response;
-  } else {
-    return NextResponse.json({ error: "CORS not allowed" }, { status: 403 });
-  }
-}
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
