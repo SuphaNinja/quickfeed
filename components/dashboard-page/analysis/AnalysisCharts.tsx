@@ -185,7 +185,7 @@ export default function DarkAnalysisDashboard({
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B] text-white p-4 md:p-8">
+    <div className="min-h-screen bg-[#0A0A0B] text-white p-5">
       <div className="max-w-[1400px] mx-auto space-y-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
@@ -215,22 +215,52 @@ export default function DarkAnalysisDashboard({
           </div>
         </div>
 
-        <Card className="md:col-span-2 bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-xl overflow-hidden">
+        <Card className="md:col-span-2 bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-xl max-h-[500px] overflow-auto custom-scrollbar">
           <CardHeader>
-            <CardTitle className=" flex justify-between text-lg font-medium">
-              <span>Sentiment Analysis</span>
-              <span>{formatDate(selectedAnalysis.createdAt, 'MMMM d, yyyy')}</span>
+            <CardTitle className=" flex md:flex-row flex-col justify-between text-base font-medium ">
+              <span className="text-xl mb-2">{selectedAnalysis.title}</span>
+              <div className="text-xs text-muted-foreground flex flex-col ">
+             <span className="text-base text-white">{selectedAnalysis.createdBy}</span>
+                <span>
+                  {formatDate(selectedAnalysis.createdAt, "MMMM d, yyyy")}
+                </span>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="p-6 shadow-lg max-w-4xl mx-auto">
+            <div
+              className="pb-5 shadow-lg 
+             mx-auto"
+            >
               <ReactMarkdown
                 components={{
-                  h1: ({ node, ...props }) => <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6" {...props} />,
-                  h2: ({ node, ...props }) => <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200 mt-8 mb-4" {...props} />,
-                  ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4" {...props} />,
-                  li: ({ node, ...props }) => <li className="mb-2 text-gray-600 dark:text-gray-300" {...props} />,
-                  p: ({ node, ...props }) => <p className="mb-4 text-gray-600 dark:text-gray-300" {...props} />,
+                  h1: ({ node, ...props }) => (
+                    <h1
+                      className="text-3xl font-bold text-gray-800 dark:text-white mb-6"
+                      {...props}
+                    />
+                  ),
+                  h2: ({ node, ...props }) => (
+                    <h2
+                      className="text-2xl font-semibold text-gray-700 dark:text-gray-200 mt-8 mb-4"
+                      {...props}
+                    />
+                  ),
+                  ul: ({ node, ...props }) => (
+                    <ul className="list-disc pl-6 mb-4" {...props} />
+                  ),
+                  li: ({ node, ...props }) => (
+                    <li
+                      className="mb-2 text-gray-600 dark:text-gray-300"
+                      {...props}
+                    />
+                  ),
+                  p: ({ node, ...props }) => (
+                    <p
+                      className="mb-4 text-gray-600 dark:text-gray-300"
+                      {...props}
+                    />
+                  ),
                 }}
                 className="prose prose-lg max-w-none dark:prose-invert
                    prose-headings:tracking-tight

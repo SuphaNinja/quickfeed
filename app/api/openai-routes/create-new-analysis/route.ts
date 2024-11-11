@@ -52,47 +52,67 @@ interface AnalysisResult {
   updatedAt: string;
 }
 
-const prompt = `Analyze the following customer feedback data and generate a detailed feedback analysis report. Use the exact structure provided below, but fill each section with relevant insights based on the given data. Use Markdown syntax for formatting.
+const prompt = (feedbacks: string []) =>  `
+You are an expert AI system specializing in customer experience and feedback analysis. 
+  Your task is to comprehensively analyze the provided customer feedback, identifying key patterns, strengths, weaknesses, and opportunities for improvement. 
+  Follow the detailed structure below to ensure the most valuable insights are surfaced.
 
-# Detailed Feedback Analysis
+  Feedback: ${feedbacks.join(", ")}
 
-## 1. Key Themes & Trends
-- List the main recurring themes or trends identified in the feedback.
+  Detailed Feedback Analysis:
 
-## 2. Sentiment Breakdown
-- Provide an overview of the sentiment (positive, negative, neutral) found in the feedback.
+  1. Key Themes & Trends:
+    - Extract and summarize recurring themes or trends in the feedback. Focus on patterns in user experiences, both positive and negative. Highlight any common phrases or sentiments that appear frequently across multiple feedback entries.
 
-## 3. Strengths (What's Working Well)
-- Highlight aspects that customers appreciate, if any.
+  2. Sentiment Breakdown:
+    - Analyze the overall sentiment of the feedback, categorizing it into positive, negative, or neutral.
+    - For each sentiment type, identify what specific aspects of the product or service are driving that sentiment.
 
-## 4. Weaknesses (Areas Needing Improvement)
-- Identify areas where customers have expressed dissatisfaction or see room for improvement.
+  3. Strengths (What’s Working Well):
+    - Highlight specific strengths praised by customers.
+    - Explain why these strengths matter to customers and how they contribute to satisfaction.
+    - Provide examples of how these strengths have impacted the user experience positively.
 
-## 5. User Journey Analysis
-- Describe how the feedback reflects on different stages of the user journey.
+  4. Weaknesses (Areas Needing Improvement):
+    - Identify any weaknesses or areas of dissatisfaction.
+    - Offer context on why these areas are problematic, considering the user's journey or expectations.
+    - Group feedback into categories such as usability issues, performance problems, missing features, etc.
 
-## 6. Actionable Suggestions for Improvement
-- Provide specific, actionable suggestions based on the feedback.
+  5. User Journey Analysis:
+    - Break down the feedback according to the different stages of the user journey (e.g., onboarding, using the product, after-sales support).
+    - Provide insights into how customer satisfaction varies at each stage and where the most significant pain points lie.
 
-## 7. Competitive Benchmarking
-- If mentioned in the feedback, include how the company compares to competitors.
+  6. Actionable Suggestions for Improvement:
+    - For each weakness or area needing improvement, provide at least two actionable suggestions that the business could implement to address the concerns raised.
+    - Ensure suggestions are practical, considering resource constraints and potential impact.
 
-## 8. Impact Prioritization
-- Suggest which areas should be prioritized for improvement based on the feedback.
+  7. Competitive Benchmarking:
+    - Compare the feedback to general industry standards or best practices. Are there areas where the product/service excels or falls behind when compared to competitors?
+    - If available, suggest competitive features or approaches that could improve the overall experience.
 
-## 9. Quantitative Insights
-- Include any quantitative data or trends that can be extracted from the feedback.
+  8. Impact Prioritization:
+    - Rank the identified issues and improvements by their potential impact on overall customer satisfaction. Focus on changes that could bring the most significant positive impact.
+    - Explain why certain improvements should be prioritized over others based on customer feedback and business goals.
 
-## 10. Customer Loyalty & Retention Analysis
-- Discuss how the feedback might impact customer loyalty and retention.
+  9. Quantitative Insights:
+    - Include a brief statistical overview of the feedback:
+      - Positive Feedback Ratio: What percentage of users had a predominantly positive experience?
+      - Negative Feedback Ratio: What percentage of users had a predominantly negative experience?
+      - Highlight any particularly extreme opinions (very positive or very negative) and their frequency.
 
-## 11. Additional Insights (Optional)
-- Include any other relevant insights derived from the feedback.
+  10. Customer Loyalty & Retention Analysis:
+    - Provide insights into the likelihood of customer retention based on the tone of the feedback.
+    - Analyze if customers seem likely to continue using the service/product or churn based on their feedback. If possible, quantify the potential churn risk.
 
-## 12. General Tone & Emotion
-- Summarize the overall tone and emotional content of the feedback.
+  11. Additional Insights (Optional):
+    - Identify any feedback that, while not critical, presents interesting insights or potential opportunities for innovation.
+    - Highlight user suggestions for new features or use cases that the business might not have considered.
 
-Ensure that each section contains relevant content based on the provided feedback data and follows proper Markdown syntax for headings and bullet points.`
+  12. General Tone & Emotion:
+    - Assess the emotional tone of the feedback. Is the feedback given with frustration, enthusiasm, or neutrality? Break down emotional cues and their influence on overall customer satisfaction.
+
+  Provide the analysis in a structured markdown format, with each section clearly labeled. Use bullet points and concise summaries where appropriate.
+`
 
 export async function POST(request: Request) {
   if (!apiKey) {
@@ -187,7 +207,7 @@ export async function POST(request: Request) {
       messages: [
         {
           role: "user",
-          content: `${prompt}
+          content: `${prompt(feedbacks)}
           Parse and analyze this feedback: ${JSON.stringify(feedbacks)}`,
         },
       ],
