@@ -5,17 +5,11 @@ import Dashboard from '@/components/dashboard-page/dashboard/Dashboard';
 import Feedbacks from '@/components/dashboard-page/feedbacks/Feedbacks';
 import DashboardSidebar from '@/components/dashboard-page/Sidebar'
 import Tasks from '@/components/dashboard-page/tasks/Tasks';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from '@clerk/nextjs';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {  useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
 import { useParams } from 'next/navigation'
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 
 interface ProjectFormValues {
     title: string;

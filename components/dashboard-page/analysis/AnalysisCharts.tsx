@@ -1,12 +1,7 @@
 "use client";
-import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
+import React, { useState, ReactNode } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -14,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Line, Bar, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,10 +22,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Bar, Pie, Line } from "react-chartjs-2";
-import { formatDistanceToNow } from "date-fns";
-import { User } from "lucide-react";
 import { Analysis } from "../../../lib/Types";
+import dynamic from "next/dynamic";
+const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 ChartJS.register(
   CategoryScale,
@@ -43,21 +38,59 @@ ChartJS.register(
   Legend
 );
 
-export default function AnalysisCharts({ analyses }: { analyses: Analysis[] }) {
+const chartColors = {
+  primary: "rgba(149, 76, 233, 0.8)",
+  secondary: "rgba(76, 0, 255, 0.8)",
+  tertiary: "rgba(191, 90, 242, 0.8)",
+  success: "rgba(80, 250, 123, 0.8)",
+  danger: "rgba(255, 85, 85, 0.8)",
+};
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: "bottom" as const,
+      labels: {
+        color: "rgba(255, 255, 255, 0.7)",
+        font: {
+          family: "Inter, sans-serif",
+          size: 12,
+        },
+        padding: 16,
+      },
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        color: "rgba(255, 255, 255, 0.1)",
+      },
+      ticks: {
+        color: "rgba(255, 255, 255, 0.7)",
+      },
+    },
+    y: {
+      grid: {
+        color: "rgba(255, 255, 255, 0.1)",
+      },
+      ticks: {
+        color: "rgba(255, 255, 255, 0.7)",
+      },
+    },
+  },
+};
+
+export default function DarkAnalysisDashboard({
+  analyses,
+}: {
+  analyses: Analysis[];
+}) {
   const [selectedAnalysisId, setSelectedAnalysisId] = useState(analyses[0]?.id);
   const selectedAnalysis =
     analyses.find((analysis) => analysis.id === selectedAnalysisId) ||
     analyses[0];
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-    },
-  };
 
   const ratingDistributionData = {
     labels: ["5 Stars", "4 Stars", "3 Stars", "2 Stars", "1 Star"],
@@ -70,13 +103,8 @@ export default function AnalysisCharts({ analyses }: { analyses: Analysis[] }) {
           selectedAnalysis.ratingDistribution.twoStarCount,
           selectedAnalysis.ratingDistribution.oneStarCount,
         ],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.8)",
-          "rgba(54, 162, 235, 0.8)",
-          "rgba(255, 206, 86, 0.8)",
-          "rgba(75, 192, 192, 0.8)",
-          "rgba(153, 102, 255, 0.8)",
-        ],
+        backgroundColor: Object.values(chartColors),
+        borderWidth: 0,
       },
     ],
   };
@@ -91,10 +119,11 @@ export default function AnalysisCharts({ analyses }: { analyses: Analysis[] }) {
           selectedAnalysis.sentimentBreakdown.negativeCount,
         ],
         backgroundColor: [
-          "rgba(75, 192, 192, 0.8)",
-          "rgba(255, 206, 86, 0.8)",
-          "rgba(255, 99, 132, 0.8)",
+          chartColors.success,
+          chartColors.tertiary,
+          chartColors.danger,
         ],
+        borderWidth: 0,
       },
     ],
   };
@@ -105,12 +134,14 @@ export default function AnalysisCharts({ analyses }: { analyses: Analysis[] }) {
       {
         label: "Frequency",
         data: selectedAnalysis.topIssues.map((item) => item.frequency),
-        backgroundColor: "rgba(255, 99, 132, 0.8)",
+        backgroundColor: chartColors.primary,
+        borderRadius: 8,
       },
       {
         label: "Average Rating",
         data: selectedAnalysis.topIssues.map((item) => item.averageRating),
-        backgroundColor: "rgba(54, 162, 235, 0.8)",
+        backgroundColor: chartColors.secondary,
+        borderRadius: 8,
       },
     ],
   };
@@ -121,8 +152,13 @@ export default function AnalysisCharts({ analyses }: { analyses: Analysis[] }) {
       {
         label: "Average Rating",
         data: selectedAnalysis.ratingTrends.map((item) => item.averageRating),
-        borderColor: "rgb(75, 192, 192)",
-        tension: 0.1,
+        borderColor: chartColors.primary,
+        backgroundColor: "rgba(149, 76, 233, 0.2)",
+        fill: true,
+        tension: 0.4,
+        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 4,
       },
     ],
   };
@@ -133,34 +169,41 @@ export default function AnalysisCharts({ analyses }: { analyses: Analysis[] }) {
       {
         label: "Frequency",
         data: selectedAnalysis.keywordAnalyses.map((item) => item.frequency),
-        backgroundColor: "rgba(255, 99, 132, 0.8)",
+        backgroundColor: chartColors.primary,
+        borderRadius: 8,
       },
       {
         label: "Average Rating",
         data: selectedAnalysis.keywordAnalyses.map(
           (item) => item.associatedRatings[0] || 0
         ),
-        backgroundColor: "rgba(54, 162, 235, 0.8)",
+        backgroundColor: chartColors.secondary,
+        borderRadius: 8,
       },
     ],
   };
 
   return (
-    <div className="space-y-8 md:p-8">
-      <Card className="w-full mx-auto bg-[#F8F9FA] dark:bg-[#09090B] border-none">
-        <CardHeader className="pb-2">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <CardTitle className="text-3xl font-bold">
+    <div className="min-h-screen bg-[#0A0A0B] text-white p-4 md:p-8">
+      <div className="max-w-[1400px] mx-auto space-y-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
               Analysis Dashboard
-            </CardTitle>
+            </h1>
+            <p className="text-gray-400 mt-1">
+              Track your performance and user feedback
+            </p>
+          </div>
+          <div className="flex items-center gap-4 w-full md:w-auto">
             <Select
               value={selectedAnalysisId}
               onValueChange={setSelectedAnalysisId}
             >
-              <SelectTrigger className="w-full sm:w-[280px] border border-neutral-900 bg-[#F8F9FA] dark:bg-[#09090B]">
-                <SelectValue placeholder="Select an analysis" />
+              <SelectTrigger className="w-[180px] border-[#2A2A2D] bg-[#1C1C1F] rounded-xl">
+                <SelectValue placeholder="Select period" />
               </SelectTrigger>
-              <SelectContent className="border border-neutral-900 bg-[#F8F9FA] dark:bg-[#09090B]">
+              <SelectContent className="bg-[#1C1C1F] border-[#2A2A2D]">
                 {analyses.map((analysis) => (
                   <SelectItem key={analysis.id} value={analysis.id}>
                     {analysis.title}
@@ -169,95 +212,93 @@ export default function AnalysisCharts({ analyses }: { analyses: Analysis[] }) {
               </SelectContent>
             </Select>
           </div>
-        </CardHeader>
-        <CardContent>
-          {selectedAnalysis.id && (
-            <div className="space-y-4">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <User className="mr-2 h-4 w-4" />
-                <span>{selectedAnalysis.createdBy}</span>
-                <span className="mx-2">•</span>
-                <time dateTime={selectedAnalysis.createdAt}>
-                  {formatDistanceToNow(new Date(selectedAnalysis.createdAt))}{" "}
-                  ago
-                </time>
-              </div>
-              <p className="text-lg leading-relaxed">
+        </div>
+
+        <Card className="md:col-span-2 bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-xl overflow-hidden">
+          <CardHeader>
+            <CardTitle className="text-lg font-medium">
+              Sentiment Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="prose prose-invert max-w-none">
+              <ReactMarkdown className="prose prose-lg prose-h2:mb-4 prose-li:mb-2 prose-p:mb-4">
                 {selectedAnalysis.description}
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Rating Distribution</CardTitle>
-            <CardDescription>
-              Distribution of ratings from 1 to 5 stars
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <Pie data={ratingDistributionData} options={chartOptions} />
+              </ReactMarkdown>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Sentiment Breakdown</CardTitle>
-            <CardDescription>
-              Distribution of positive, neutral, and negative sentiments
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <Pie data={sentimentBreakdownData} options={chartOptions} />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-xl overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium">
+                Rating Distribution
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <Doughnut
+                  data={ratingDistributionData}
+                  options={chartOptions}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Top Issues</CardTitle>
-            <CardDescription>
-              Frequency and average rating of top issues
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <Bar data={topIssuesData} options={chartOptions} />
-            </div>
-          </CardContent>
-        </Card>
+          <Card className="bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-xl overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium">
+                Sentiment Breakdown
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <Doughnut
+                  data={sentimentBreakdownData}
+                  options={chartOptions}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Rating Trends</CardTitle>
-            <CardDescription>Average rating over time</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <Line data={ratingTrendsData} options={chartOptions} />
-            </div>
-          </CardContent>
-        </Card>
+          <Card className="bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-xl overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium">
+                Rating Trends
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <Line data={ratingTrendsData} options={chartOptions} />
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>Keyword Analysis</CardTitle>
-            <CardDescription>
-              Frequency and average rating of key terms
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[400px]">
-              <Bar data={keywordAnalysisData} options={chartOptions} />
-            </div>
-          </CardContent>
-        </Card>
+          <Card className="bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-xl overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium">Top Issues</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <Bar data={topIssuesData} options={chartOptions} />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="md:col-span-2 bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-xl overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium">
+                Keyword Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px]">
+                <Bar data={keywordAnalysisData} options={chartOptions} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

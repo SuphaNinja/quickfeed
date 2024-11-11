@@ -2,14 +2,12 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LayoutDashboard, MessageSquare, BarChart, CheckSquare, Folder, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import Image from "next/image"
 import {UserButton} from "@clerk/nextjs"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -139,7 +137,7 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
                     <SidebarContent />
                 </SheetContent>
             </Sheet>
-            <aside className="hidden md:flex w-[300px] h-screen border-r border-neutral-900 flex-col bg-[#F8F9FA] dark:bg-[#09090B]">
+            <aside className="hidden md:flex w-[300px] h-screen border-r border-neutral-900 flex-col max-h-full bg-[#F8F9FA] dark:bg-[#09090B]">
                 <SidebarContent />
             </aside>
         </>
