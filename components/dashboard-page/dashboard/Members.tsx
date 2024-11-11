@@ -1,56 +1,85 @@
-import React, { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { UserPlus, Trash2 } from "lucide-react";
-import { ProjectRoom, ProjectRoomUser } from "../../../lib/Types";
-import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { useAuth } from "@clerk/nextjs";
-import { useUser } from "@clerk/nextjs";
+'use client'
 
+import React, { useState } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { UserPlus, Trash2 } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import axios from "axios"
+import { useAuth } from "@clerk/nextjs"
+import { useUser } from "@clerk/nextjs"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 
-function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
-  const queryClient = useQueryClient();
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+// Assuming these types are defined elsewhere
+type ProjectRoom = {
+  id: string
+  users: ProjectRoomUser[]
+}
 
-  const { userId } = useAuth();
-  const users: ProjectRoomUser[] = projectRoom.users || [];
+type ProjectRoomUser = {
+  id: string
+  userId: string
+  first_name: string
+  last_name: string
+  email: string
+  image?: string
+  role?: string
+}
+
+export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
+  const queryClient = useQueryClient()
+  const [email, setEmail] = useState("")
+  const [error, setError] = useState("")
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const { userId } = useAuth()
+  const { user } = useUser()
+  const users: ProjectRoomUser[] = projectRoom.users || []
 
   const isUserAdmin = (userId: string, users: ProjectRoomUser[]): boolean => {
-    const user = users.find((user) => user.userId === userId);
-    return user?.role === "admin";
-  };
+    const user = users.find((user) => user.userId === userId)
+    return user?.role === "admin"
+  }
 
   const getRoleColor = (role: string) => {
     switch (role?.toLowerCase()) {
       case "admin":
-        return "bg-emerald-500/10 text-emerald-500";
+        return "bg-emerald-500/10 text-emerald-500"
       case "developer":
-        return "bg-emerald-500/10 text-emerald-500";
+        return "bg-emerald-500/10 text-emerald-500"
       case "marketing":
-        return "bg-pink-500/10 text-pink-500";
+        return "bg-pink-500/10 text-pink-500"
       default:
-        return "bg-gray-500/10 text-gray-500";
+        return "bg-gray-500/10 text-gray-500"
     }
-  };
+  }
+
   const getInitials = (first_name: string, last_name: string) => {
-    return `${first_name[0] || ""}${last_name[1] || ""}`.toUpperCase();
-  };
+    return `${first_name[0] || ""}${last_name[0] || ""}`.toUpperCase()
+  }
+
   const validateEmail = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return regex.test(email)
+  }
 
   const inviteUserMutation = useMutation({
     mutationFn: (email: string) =>
@@ -58,17 +87,20 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
         email,
         projectRoomId: projectRoom.id,
       }),
-    onSuccess: () =>
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["projectRoom", projectRoom.id],
-      }),
+      })
+      setIsDialogOpen(false)
+      setEmail("")
+    },
     onError: (error: any) => {
       setError(
         error.response?.data?.error ||
           "An error occurred while inviting the user."
-      );
+      )
     },
-  });
+  })
 
   const deleteUserFromProject = useMutation({
     mutationFn: (removeUserId: string) =>
@@ -80,7 +112,7 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
       queryClient.invalidateQueries({
         queryKey: ["projectRoom", projectRoom.id],
       }),
-  });
+  })
 
   const changeRoleOfUser = useMutation({
     mutationFn: ({ email, role }: { email: string; role: string }) =>
@@ -92,28 +124,29 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["projectRoom", projectRoom.id],
-      });
+      })
     },
-  });
+  })
+
   const handleRoleChange = (email: string, newRole: string) => {
-    changeRoleOfUser.mutate({ email, role: newRole });
-  };
+    changeRoleOfUser.mutate({ email, role: newRole })
+  }
 
   const handleInvite = () => {
     if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
+      setError("Please enter a valid email address.")
+      return
     }
-    inviteUserMutation.mutate(email);
-  };
+    inviteUserMutation.mutate(email)
+  }
 
   const handleDeleteUser = (removeUserId: string) => {
-    deleteUserFromProject.mutate(removeUserId);
-  };
+    deleteUserFromProject.mutate(removeUserId)
+  }
 
   return (
-    <div className="border p-6 border-neutral-900 sm:rounded-lg max-w-2xl">
-      <div className="flex flex-col lg:flex-row items-center justify-between mb-6">
+    <div className="border p-6 border-neutral-900 rounded-lg w-2xl">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold flex items-center gap-2">
           Members{" "}
           <span role="img" aria-label="members">
@@ -121,33 +154,45 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
           </span>
         </h2>
         {userId && isUserAdmin(userId, users) && (
-          <div className="flex items-center lg:mt-0 mt-2 gap-2">
-            <Input
-              type="email"
-              placeholder="Enter email to invite"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value), setError("");
-              }}
-              className="max-w-xs"
-            />
-            <Button
-              size="sm"
-              onClick={handleInvite}
-              disabled={inviteUserMutation.isPending}
-            >
-              <UserPlus className="w-4 h-4 mr-2" />
-              {inviteUserMutation.isPending ? "Inviting..." : "Invite"}
-            </Button>
-          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <UserPlus className="w-4 h-4 mr-2" />
+                Invite
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Invite new member</DialogTitle>
+                <DialogDescription>
+                  Enter the email address of the person you&apos;d like to invite to this project.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <Input
+                  type="email"
+                  placeholder="Enter email to invite"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    setError("")
+                  }}
+                />
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+              </div>
+              <DialogFooter>
+                <Button onClick={handleInvite} disabled={inviteUserMutation.isPending}>
+                  {inviteUserMutation.isPending ? "Inviting..." : "Send Invite"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
-
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
 
       <div className="space-y-3 min-h-44 overflow-y-auto">
         {users.map((user) => (
@@ -186,7 +231,7 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
                 >
                   <SelectTrigger
                     className={`w-[100px] h-6 px-2.5 border-0 ${getRoleColor(
-                      user.role
+                      user.role || ""
                     )} hover:bg-opacity-80`}
                   >
                     <SelectValue
@@ -219,7 +264,5 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
         ))}
       </div>
     </div>
-  );
+  )
 }
-
-export default Members;

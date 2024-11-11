@@ -197,6 +197,7 @@ export default function DarkAnalysisDashboard({
             </p>
           </div>
           <div className="flex items-center gap-4 w-full md:w-auto">
+            <p>Analysis from: </p>
             <Select
               value={selectedAnalysisId}
               onValueChange={setSelectedAnalysisId}
@@ -207,7 +208,7 @@ export default function DarkAnalysisDashboard({
               <SelectContent className="bg-[#1C1C1F] border-[#2A2A2D]">
                 {analyses.map((analysis) => (
                   <SelectItem key={analysis.id} value={analysis.id}>
-                    {analysis.title}
+                    {formatDate(analysis.createdAt, 'MMMM d, yyyy') }
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -343,6 +344,33 @@ export default function DarkAnalysisDashboard({
             </CardContent>
           </Card>
         </div>
+        <Card className="md:col-span-2 bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-xl overflow-hidden">
+          <CardHeader>
+            <CardTitle className=" flex justify-between text-lg font-medium">
+              <span>Sentiment Analysis</span>
+              <span>{formatDate(selectedAnalysis.createdAt, 'MMMM d, yyyy')}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="p-6 shadow-lg max-w-4xl mx-auto">
+              <ReactMarkdown
+                components={{
+                  h1: ({ node, ...props }) => <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6" {...props} />,
+                  h2: ({ node, ...props }) => <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200 mt-8 mb-4" {...props} />,
+                  ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4" {...props} />,
+                  li: ({ node, ...props }) => <li className="mb-2 text-gray-600 dark:text-gray-300" {...props} />,
+                  p: ({ node, ...props }) => <p className="mb-4 text-gray-600 dark:text-gray-300" {...props} />,
+                }}
+                className="prose prose-lg max-w-none dark:prose-invert
+                   prose-headings:tracking-tight
+                   prose-p:leading-relaxed
+                   prose-li:leading-relaxed"
+              >
+                {selectedAnalysis.description}
+              </ReactMarkdown>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

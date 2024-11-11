@@ -13,13 +13,13 @@ export async function GET(
     }
 
     const taskId = params.taskId;
-    console.log(taskId)
     if (!taskId) {
       return NextResponse.json({ error: "No task id provided" }, { status: 400 });
     }
 
     const task = await prisma.task.findUnique({
       where: { id: taskId },
+      include: { assignee: true, assignor: true}
     });
 
     if (!task) {
