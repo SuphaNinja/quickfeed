@@ -52,7 +52,7 @@ export function FilterButtons({ filter, setFilter }: { filter: FilterType; setFi
     ];
     
     return (
-        <div className="flex gap-2">
+        <div className="flex justify-evenly md:justify-start md:gap-2">
             {filterButtons.map((button) => (
                 <Button
                     key={button.type}

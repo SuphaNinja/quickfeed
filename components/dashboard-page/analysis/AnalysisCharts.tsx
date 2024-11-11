@@ -24,6 +24,7 @@ import {
 } from "chart.js";
 import { Analysis } from "../../../lib/Types";
 import dynamic from "next/dynamic";
+import { formatDate } from "date-fns";
 const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 ChartJS.register(
@@ -216,13 +217,26 @@ export default function DarkAnalysisDashboard({
 
         <Card className="md:col-span-2 bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-xl overflow-hidden">
           <CardHeader>
-            <CardTitle className="text-lg font-medium">
-              Sentiment Analysis
+            <CardTitle className=" flex justify-between text-lg font-medium">
+              <span>Sentiment Analysis</span>
+              <span>{formatDate(selectedAnalysis.createdAt, 'MMMM d, yyyy')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="prose prose-invert max-w-none">
-              <ReactMarkdown className="prose prose-lg prose-h2:mb-4 prose-li:mb-2 prose-p:mb-4">
+            <div className="p-6 shadow-lg max-w-4xl mx-auto">
+              <ReactMarkdown
+                components={{
+                  h1: ({ node, ...props }) => <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6" {...props} />,
+                  h2: ({ node, ...props }) => <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200 mt-8 mb-4" {...props} />,
+                  ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4" {...props} />,
+                  li: ({ node, ...props }) => <li className="mb-2 text-gray-600 dark:text-gray-300" {...props} />,
+                  p: ({ node, ...props }) => <p className="mb-4 text-gray-600 dark:text-gray-300" {...props} />,
+                }}
+                className="prose prose-lg max-w-none dark:prose-invert
+                   prose-headings:tracking-tight
+                   prose-p:leading-relaxed
+                   prose-li:leading-relaxed"
+              >
                 {selectedAnalysis.description}
               </ReactMarkdown>
             </div>

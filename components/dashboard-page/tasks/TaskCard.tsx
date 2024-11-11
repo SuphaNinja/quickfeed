@@ -3,9 +3,9 @@
 import React from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, UserIcon } from 'lucide-react'
 import { Task } from '@/lib/Types'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useParams } from 'next/navigation'
@@ -28,9 +28,17 @@ const getStatusColor = (status: string) => {
   }
 }
 
-export default function TaskCard({ task, isAdmin }: { task: Task; isAdmin: boolean }) {
+export default function TaskCard({ task: initialTask, isAdmin }: { task: Task; isAdmin: boolean }) {
   const queryClient = useQueryClient()
   const params = useParams()
+
+
+  const { data: task } = useQuery<Task>({
+    queryKey: ['task', initialTask.id],
+    queryFn: () => axios.get(`/api/projectroom-routes/tasks/get-task/${initialTask.id}`).then(res => res.data),
+    initialData: initialTask,
+  })
+  
 
   const changeStatus = useMutation({
     mutationFn: (newStatus: string) =>
@@ -40,8 +48,7 @@ export default function TaskCard({ task, isAdmin }: { task: Task; isAdmin: boole
         projectRoomId: params.roomId
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["myTasks", params.roomId] })
-      queryClient.invalidateQueries({ queryKey: ["allTasks", params.roomId] })
+      queryClient.invalidateQueries({ queryKey: ["task", initialTask.id] })
     },
   })
 
@@ -57,8 +64,7 @@ export default function TaskCard({ task, isAdmin }: { task: Task; isAdmin: boole
         projectRoomId: params.roomId
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["myTasks", params.roomId] })
-      queryClient.invalidateQueries({ queryKey: ["allTasks", params.roomId] })
+      queryClient.invalidateQueries({ queryKey: ["task", initialTask.id] }) 
     },
   })
 
@@ -77,12 +83,12 @@ export default function TaskCard({ task, isAdmin }: { task: Task; isAdmin: boole
           <div className="flex flex-col gap-2 mb-3">
             {isAdmin ? (
               <Select
-                defaultValue={task.priority}
+                value={task.priority}
                 onValueChange={handlePriorityChange}
                 disabled={changePriority.isPending}
               >
                 <SelectTrigger className={`w-[130px] h-[22px] px-2 py-0 text-xs font-medium border rounded-full ${getPriorityColor(task.priority)}`}>
-                  <SelectValue placeholder="Change priority" />
+                  <SelectValue>{task.priority}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">Low</SelectItem>
@@ -91,18 +97,18 @@ export default function TaskCard({ task, isAdmin }: { task: Task; isAdmin: boole
                 </SelectContent>
               </Select>
             ) : (
-            <Badge variant="outline" className={`${getPriorityColor(task.priority)} text-xs font-medium px-2 py-1`}>
-              {task.priority}
-            </Badge>
+              <Badge variant="outline" className={`${getPriorityColor(task.priority)} text-xs font-medium px-2 py-1`}>
+                {task.priority}
+              </Badge>
             )}
             {isAdmin ? (
               <Select
-                defaultValue={task.status}
+                value={task.status}
                 onValueChange={handleStatusChange}
                 disabled={changeStatus.isPending}
               >
                 <SelectTrigger className={`w-[130px] h-[22px] px-2 py-0 text-xs font-medium border rounded-full ${getStatusColor(task.status)}`}>
-                  <SelectValue placeholder="Change status" />
+                  <SelectValue>{task.status}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pending">Pending</SelectItem>
@@ -117,9 +123,21 @@ export default function TaskCard({ task, isAdmin }: { task: Task; isAdmin: boole
             )}
           </div>
         </div>
-        <div className="flex items-center text-xs text-gray-500">
-          <CalendarIcon className="w-3 h-3 mr-1" />
-          {task.deadline ? new Date(task.deadline).toLocaleDateString() : "No deadline set"}
+        <div className="space-y-2 mt-3">
+          <div className="flex items-center text-xs text-gray-500">
+            <CalendarIcon className="w-3 h-3 mr-1" />
+            {task.deadline ? new Date(task.deadline).toLocaleDateString() : "No deadline set"}
+          </div>
+          <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
+            <div className="flex items-center">
+              <UserIcon className="w-3 h-3 mr-1" />
+              <span>Assigned to: {task.assignee?.first_name || 'Unassigned'}</span>
+            </div>
+            <div className="flex items-center">
+              <UserIcon className="w-3 h-3 mr-1" />
+              <span>Assigned by: {task.assignor?.first_name || 'N/A'}</span>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -3,9 +3,8 @@
 import { ProjectRoom, ProjectRoomUser } from '@/lib/Types'
 import MyTasks from './MyTasks'
 import AllTasks from './AllTasks';
-import TaskHeader from './TaskHeader';
 import { useAuth } from '@clerk/nextjs';
-import { useProject } from '@/contexts/ProjectRoomContext';
+import NewTaskButton from './NewTaskButton';
 
 function Tasks({ projectRoom }: { projectRoom: ProjectRoom }) {
   const { userId } = useAuth();
@@ -15,12 +14,14 @@ function Tasks({ projectRoom }: { projectRoom: ProjectRoom }) {
     const user = users.find(user => user.userId === userId)
     return user?.role === 'admin'
   }
-
-
   
   return (
-    <div className="md:mx-24 mx-6">
-      <TaskHeader projectRoom={projectRoom} />
+    <div className="md:mx-24 pb-12 mx-6">
+      {isUserAdmin(userId!, users) && (
+        <div className='ml-auto'>
+          <NewTaskButton projectRoom={projectRoom} />
+        </div>
+      )}
       <div className='flex lg:flex-row flex-col gap-8 h-[calc(100vh-100px)]'>
         <div className='lg:w-1/2 w-full'>
           <MyTasks isAdmin={isUserAdmin(userId!, users)} />

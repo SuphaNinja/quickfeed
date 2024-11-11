@@ -5,7 +5,7 @@ const calculateTaskStats = (tasks: Task[]) => {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const activeTasks = tasks.filter((task) => task.status === "active").length;
+  const activeTasks = tasks.filter((task) => task.status === "in progress" || task.status === "pending").length;
   const tasksAddedToday = tasks.filter((task) => {
     const taskDate = new Date(task.createdAt);
     return taskDate >= today;
@@ -83,25 +83,25 @@ function DashboardHeader({ projectRoom }: { projectRoom: ProjectRoom }) {
   const { activeTasks, tasksAddedToday } = calculateTaskStats(tasks);
 
   return (
-    <div className="w-full flex-col pt-4 md:pt-16 px-4 md:px-8">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-        <div className="space-y-2 md:space-y-4 p-4 rounded-lg">
-          <p className="text-gray-400 text-sm md:text-base">Positive rating</p>
-          <p className="text-3xl md:text-5xl text-emerald-400">
+    <div className="w-full flex-col pt-4 lg:pt-16 px-4 lg:px-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
+        <div className="space-y-2 lg:space-y-4 p-4 rounded-lg">
+          <p className="text-gray-400 text-sm lg:text-base">Positive rating</p>
+          <p className="text-3xl lg:text-5xl text-emerald-400">
             {goodPercentage}%
           </p>
-          <p className="text-gray-400 text-xs md:text-sm">
+          <p className="text-gray-400 text-xs lg:text-sm">
             Overall rating{" "}
             <span className="text-emerald-400 ml-1">{averageRating}</span>
           </p>
         </div>
 
-        <div className="space-y-2 md:space-y-4 p-4 rounded-lg">
-          <p className="text-gray-400 text-sm md:text-base">Total feedbacks</p>
-          <p className="text-3xl md:text-5xl text-blue-300">
+        <div className="space-y-2 lg:space-y-4 p-4 rounded-lg">
+          <p className="text-gray-400 text-sm lg:text-base">Total feedbacks</p>
+          <p className="text-3xl lg:text-5xl text-blue-300">
             {feedbacks.length}
           </p>
-          <p className="text-gray-400 text-xs md:text-sm">
+          <p className="text-gray-400 text-xs lg:text-sm">
             <span className={growth >= 0 ? "text-blue-300" : "text-red-300"}>
               {growth >= 0 ? "+" : ""}
               {growthPercentage}%
@@ -110,18 +110,18 @@ function DashboardHeader({ projectRoom }: { projectRoom: ProjectRoom }) {
           </p>
         </div>
 
-        <div className="space-y-2 md:space-y-4 p-4 rounded-lg">
-          <p className="text-gray-400 text-sm md:text-base">Weekly visitors</p>
-          <p className="text-3xl md:text-5xl text-purple-300">952</p>
-          <p className="text-gray-400 text-xs md:text-sm">
+        <div className="space-y-2 lg:space-y-4 p-4 rounded-lg">
+          <p className="text-gray-400 text-sm lg:text-base">Weekly visitors</p>
+          <p className="text-3xl lg:text-5xl text-purple-300">952</p>
+          <p className="text-gray-400 text-xs lg:text-sm">
             <span className="text-purple-300">5%</span> last week
           </p>
         </div>
 
-        <div className="space-y-2 md:space-y-4 p-4 rounded-lg">
-          <p className="text-gray-400 text-sm md:text-base">Active tasks</p>
-          <p className="text-3xl md:text-5xl text-amber-300">{activeTasks}</p>
-          <p className="text-gray-400 text-xs md:text-sm">
+        <div className="space-y-2 lg:space-y-4 p-4 rounded-lg">
+          <p className="text-gray-400 text-sm lg:text-base">Active tasks</p>
+          <p className="text-3xl lg:text-5xl text-amber-300">{activeTasks}</p>
+          <p className="text-gray-400 text-xs lg:text-sm">
             <span className="text-amber-300">
               {tasksAddedToday === 0 ? "No tasks" : `+${tasksAddedToday}`}
             </span>

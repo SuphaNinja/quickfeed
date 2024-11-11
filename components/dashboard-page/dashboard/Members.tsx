@@ -25,7 +25,6 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
   const [error, setError] = useState("");
 
   const { userId } = useAuth();
-  const { user } = useUser();
   const users: ProjectRoomUser[] = projectRoom.users || [];
 
   const isUserAdmin = (userId: string, users: ProjectRoomUser[]): boolean => {
@@ -113,8 +112,8 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
   };
 
   return (
-    <div className="border p-6 border-neutral-900 rounded-lg w-2xl">
-      <div className="flex items-center justify-between mb-6">
+    <div className="border p-6 border-neutral-900 sm:rounded-lg max-w-2xl">
+      <div className="flex flex-col lg:flex-row items-center justify-between mb-6">
         <h2 className="text-xl font-semibold flex items-center gap-2">
           Members{" "}
           <span role="img" aria-label="members">
@@ -122,7 +121,7 @@ function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
           </span>
         </h2>
         {userId && isUserAdmin(userId, users) && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center lg:mt-0 mt-2 gap-2">
             <Input
               type="email"
               placeholder="Enter email to invite"

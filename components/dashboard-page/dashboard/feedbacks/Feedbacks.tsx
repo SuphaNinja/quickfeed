@@ -43,16 +43,15 @@ export default function Feedbacks({ projectRoomId }: { projectRoomId: string }) 
     }
 
     return (
-        <div className="flex flex-col md:border md:p-6 border-neutral-900 rounded-lg w-full max-w-2xl">
-            <h1 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+        <div className="flex flex-col md:border md:p-4 p-2 border-neutral-900 rounded-lg w-full max-w-2xl">
+            <ScrollArea className="h-[500px]">
+            <h1 className="text-2xl font-semibold mb-6 justify-center flex items-center gap-2">
                 Feedbacks <span role="img" aria-label="waving hand">👋</span>
             </h1>
             <div className='flex md:flex-row gap-2 flex-col justify-between'>
                 <FilterButtons filter={filter} setFilter={setFilter}/>
                 <SortSelect sort={sort} setSort={setSort}/>
             </div>
-
-            <ScrollArea className="h-[500px] pr-4">
                 <div className="space-y-4">
                     {isLoading ? (
                         Array.from({ length: 5 }).map((_, index) => (

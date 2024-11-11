@@ -42,6 +42,7 @@ export default function NavBar() {
                         {isSuccess && (
                             <Button asChild variant={"link"}>
                                 <Link 
+                                    prefetch={true}
                                     href={currentUser?.data.projectRoomsUser.length > 0 ? 
                                         `/dashboard/${currentUser?.data.projectRoomsUser[0].projectRoomId}`
                                         : "/create-new-project"
