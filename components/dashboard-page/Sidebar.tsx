@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import {UserButton} from "@clerk/nextjs"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ProjectRoom, ProjectRoomUser } from '@/lib/Types'
 
 const tabs = [
     { name: 'Dashboard', icon: LayoutDashboard },
@@ -20,7 +21,7 @@ const tabs = [
 ]
 
 interface DashboardSidebarProps {
-    projectRoom: any;
+    projectRoom: ProjectRoom;
     setActiveTab: (tab: string) => void;
 }
 
@@ -32,10 +33,10 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
     const { data: currentUser, isLoading, isSuccess } = useQuery({
         queryKey: ["currentUser"],
         queryFn: () => axios.get("/api/user-routes/get-current-user")
-    })
+    })  
 
     const handleProjectChange = (projectRoomId: string) => {
-        const selected = currentUser?.data.projectRoomsUser.find(user => user.projectRoomId === projectRoomId);
+        const selected = currentUser?.data.projectRoomsUser.find((user: { projectRoomId: string }) => user.projectRoomId === projectRoomId);
         if (selected) {
             setSelectedProject(selected.projectRoom);
             router.push(`/dashboard/${projectRoomId}`);
@@ -100,14 +101,14 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
                 {isLoading ? (
                     <Skeleton className="h-10 w-full" />
                 ) : currentUser?.data.projectRoomsUser.length > 0 ? (
-                    <Select onValueChange={handleProjectChange} value={selectedProject?.id}>
+                        <Select onValueChange={handleProjectChange} defaultValue={"123"}>
                         <SelectTrigger className="w-full bg-[#F8F9FA] border-neutral-900 text-white dark:bg-[#09090B]">
                             <SelectValue className='text-wh'>
-                                {selectedProject?.title || "Select a project"}
+                                {selectedProject?.title}
                             </SelectValue>
                         </SelectTrigger>
                         <SelectContent className='bg-[#F8F9FA] dark:bg-[#09090B]'>
-                            {isSuccess && currentUser.data.projectRoomsUser.map((user) => (
+                            {isSuccess && currentUser.data.projectRoomsUser.map((user: ProjectRoomUser) => (
                                 <SelectItem key={user.projectRoomId} value={user.projectRoomId} className='bg-[#F8F9FA] dark:bg-[#09090B]'>
                                     {user.projectRoom.title}
                                 </SelectItem>

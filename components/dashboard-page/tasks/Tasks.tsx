@@ -16,12 +16,13 @@ function Tasks({ projectRoom }: { projectRoom: ProjectRoom }) {
   }
   
   return (
-    <div className="md:mx-24 pb-12 mx-6">
-      {isUserAdmin(userId!, users) && (
-        <div className='ml-auto'>
+    <div className="md:mx-24 py-12 mx-6">
+      <div className="flex justify-between mb-4">
+        <h1></h1>
+        {isUserAdmin(userId!, users) && (
           <NewTaskButton projectRoom={projectRoom} />
-        </div>
-      )}
+        )}
+      </div>
       <div className='flex lg:flex-row flex-col gap-8 h-[calc(100vh-100px)]'>
         <div className='lg:w-1/2 w-full'>
           <MyTasks isAdmin={isUserAdmin(userId!, users)} />
