@@ -6,12 +6,13 @@ export async function POST(request: NextRequest) {
     try {
         const { projectRoomId } = await request.json();
         
-        if (projectRoomId) {
+        if (!projectRoomId) {
             return NextResponse.json({ error: "No project id provided" }, { status: 401 });
         }
 
         const tasks = await prisma.task.findMany({
-            where: {projectRoomId: projectRoomId}
+            where: { projectRoomId: projectRoomId },
+            orderBy: { createdAt: "desc" }
         })
 
         if (!tasks) {

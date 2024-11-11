@@ -20,7 +20,8 @@ export async function POST(request: NextRequest) {
         }
 
         const myTasks = await prisma.task.findMany({
-            where: { assigneeId: user.id, projectRoomId: projectRoomId }
+            where: { assigneeId: user.id, projectRoomId: projectRoomId },
+            orderBy: {createdAt: "desc"}
         })
 
         if (!myTasks) {

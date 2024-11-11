@@ -1,5 +1,5 @@
 "use client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { ProjectRoom, Feedback } from "@/lib/Types";
@@ -31,21 +31,12 @@ export function CreateNewAnalysis({ feedbacks }: { feedbacks: Feedback[] }) {
   const { roomId } = useParams();
   const { toast } = useToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-
+  const queryClient = useQueryClient()
+  const params = useParams()
 
   const { mutate: sendData, isPending } = useMutation({
-    mutationFn: async () => {
-      setIsAnalyzing(true);
-      const response = await axios.post(
-        "/api/openai-routes/create-new-analysis",
-        {
-          feedbacks,
-          projectId: roomId,
-        }
-      );
-      return response.data;
-    },
+    mutationFn: () => axios.post("/api/openai-routes/create-new-analysis",{feedbacks,projectId: roomId}),
+    onMutate: () => setIsAnalyzing(true),
     onSuccess: () => {
       toast({
         title: "Analysis complete!",
@@ -53,6 +44,7 @@ export function CreateNewAnalysis({ feedbacks }: { feedbacks: Feedback[] }) {
         variant: "default",
       });
       setIsAnalyzing(false);
+      queryClient.invalidateQueries({queryKey: ["projectRoom",params.roomId]})
     },
     onError: (error: Error) => {
       toast({

@@ -2,81 +2,84 @@
 
 import axios from 'axios'
 import { useParams } from 'next/navigation'
-import React from 'react'
+import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { format, parseISO } from 'date-fns'
-import { CalendarIcon, AlertCircle } from 'lucide-react'
-import TaskEditor from './TaskEditor'
+import { Card, CardContent } from "@/components/ui/card"
+import { AlertCircle, CalendarIcon } from 'lucide-react'
+import TaskCard from './TaskCard'
+import { Task } from '@/lib/Types'
+import { sortTasks, TaskSortSelect } from './TaskSort'
+import { Skeleton } from '@/components/ui/skeleton'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
-interface Task {
-    id: string
-    title: string
-    description: string
-    deadline: string | null
-    priority: 'low' | 'medium' | 'high'
-    status: 'todo' | 'in_progress' | 'completed'
-}
+type SortType = "newest" | "oldest" | "status" | "priority";
 
-function MyTasks() {
+export default function MyTasks({ isAdmin }: { isAdmin: boolean }) {
+    const [sort, setSort] = useState<SortType>("newest");
     const params = useParams()
     const { data: myTasks, isLoading, isError } = useQuery<{ data: Task[] }>({
         queryKey: ["myTasks", params.roomId],
         queryFn: () => axios.post("/api/projectroom-routes/tasks/get-my-tasks", { projectRoomId: params.roomId }),
     })
 
-    const getPriorityColor = (priority: Task['priority']) => {
-        switch (priority) {
-            case 'low': return 'bg-green-500'
-            case 'medium': return 'bg-yellow-500'
-            case 'high': return 'bg-red-500'
-            default: return 'bg-gray-500'
-        }
-    }
+    const tasks: Task[] = myTasks?.data || [];
+    const sortedTasks = sortTasks(tasks, sort);
 
-    const getStatusColor = (status: Task['status']) => {
-        switch (status) {
-            case 'todo': return 'bg-gray-500'
-            case 'in_progress': return 'bg-blue-500'
-            case 'completed': return 'bg-green-500'
-            default: return 'bg-gray-500'
-        }
-    }
-
-    const formatDeadline = (deadline: string | null) => {
-        if (!deadline) return 'No deadline set'
-        try {
-            const date = parseISO(deadline)
-            return format(date, 'PPP p',)
-        } catch (error) {
-            console.error('Error parsing date:', error)
-            return 'Invalid date'
-        }
-    }
-
-    if (isLoading) return <div>Loading tasks...</div>
-    if (isError) return <div>Error loading tasks</div>
+    if (isError) return null
 
     return (
         <div className="space-y-4">
-            <h2 className="text-2xl font-bold">My Tasks</h2>
-            {myTasks?.data.map((task) => (
-                <div key={task.id}>
-                    <TaskEditor task={task} />
-                </div>
-            ))}
-            {myTasks?.data.length === 0 && (
-                <Card>
-                    <CardContent className="flex items-center justify-center p-6">
-                        <AlertCircle className="mr-2 h-4 w-4 opacity-70" />
-                        <span className="text-sm text-muted-foreground">No tasks found</span>
-                    </CardContent>
-                </Card>
-            )}
+            <div className='flex md:flex-row flex-col justify-between'>
+                <h2 className="text-2xl font-bold">My Tasks</h2>
+                <TaskSortSelect sort={sort} setSort={setSort} />
+            </div>
+            <ScrollArea className="h-[calc(100vh-200px)] pr-4">
+                {isLoading ? (
+                    <div className="space-y-4">
+                        {[...Array(5)].map((_, index) => (
+                            <TaskSkeleton key={index} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {sortedTasks.map((task) => (
+                            <TaskCard key={task.id} task={task} isAdmin={isAdmin} />
+                        ))}
+                    </div>
+                )}
+                {myTasks?.data.length === 0 && (
+                    <Card>
+                        <CardContent className="flex items-center justify-center p-6">
+                            <AlertCircle className="mr-2 h-4 w-4 opacity-70" />
+                            <span className="text-sm text-muted-foreground">No tasks found</span>
+                        </CardContent>
+                    </Card>
+                )}
+            </ScrollArea>
         </div>
     )
 }
 
-export default MyTasks
+function TaskSkeleton() {
+    return (
+        <Card className="overflow-hidden">
+            <CardContent className="p-4">
+                <div className='flex justify-between'>
+                    <div className="w-2/3">
+                        <Skeleton className="h-6 w-full mb-2" />
+                        <Skeleton className="h-4 w-full mb-1" />
+                        <Skeleton className="h-4 w-3/4 mb-3" />
+                    </div>
+                    <div className="flex flex-col gap-2 mb-3">
+                        <Skeleton className="h-6 w-16" />
+                        <Skeleton className="h-6 w-16" />
+                    </div>
+                </div>
+                <div className="flex items-center text-xs text-gray-500">
+                    <CalendarIcon className="w-3 h-3 mr-1 text-gray-400" />
+                    <Skeleton className="h-3 w-24" />
+                </div>
+            </CardContent>
+        </Card>
+    )
+}

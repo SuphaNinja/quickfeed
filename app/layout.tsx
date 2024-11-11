@@ -11,8 +11,8 @@ import './globals.css'
 export const metadata: Metadata = {
   metadataBase: new URL("https://starter.rasmic.xyz"),
   title: {
-    default: 'Nextjs Starter Kit',
-    template: `%s | Nextjs Starter Kit`
+    default: 'Quickfeed',
+    template: `%s | Quickfeed`
   },
 }
 
@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <AuthWrapper>
-      <html lang="en" >
+      <html lang="en" suppressHydrationWarning>
         <body className={GeistSans.className}>
           <Provider>
             <ThemeProvider

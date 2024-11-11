@@ -52,6 +52,48 @@ interface AnalysisResult {
   updatedAt: string;
 }
 
+const prompt = `Analyze the following customer feedback data and generate a detailed feedback analysis report. Use the exact structure provided below, but fill each section with relevant insights based on the given data. Use Markdown syntax for formatting.
+
+# Detailed Feedback Analysis
+
+## 1. Key Themes & Trends
+- List the main recurring themes or trends identified in the feedback.
+
+## 2. Sentiment Breakdown
+- Provide an overview of the sentiment (positive, negative, neutral) found in the feedback.
+
+## 3. Strengths (What's Working Well)
+- Highlight aspects that customers appreciate, if any.
+
+## 4. Weaknesses (Areas Needing Improvement)
+- Identify areas where customers have expressed dissatisfaction or see room for improvement.
+
+## 5. User Journey Analysis
+- Describe how the feedback reflects on different stages of the user journey.
+
+## 6. Actionable Suggestions for Improvement
+- Provide specific, actionable suggestions based on the feedback.
+
+## 7. Competitive Benchmarking
+- If mentioned in the feedback, include how the company compares to competitors.
+
+## 8. Impact Prioritization
+- Suggest which areas should be prioritized for improvement based on the feedback.
+
+## 9. Quantitative Insights
+- Include any quantitative data or trends that can be extracted from the feedback.
+
+## 10. Customer Loyalty & Retention Analysis
+- Discuss how the feedback might impact customer loyalty and retention.
+
+## 11. Additional Insights (Optional)
+- Include any other relevant insights derived from the feedback.
+
+## 12. General Tone & Emotion
+- Summarize the overall tone and emotional content of the feedback.
+
+Ensure that each section contains relevant content based on the provided feedback data and follows proper Markdown syntax for headings and bullet points.`
+
 export async function POST(request: Request) {
   if (!apiKey) {
     return NextResponse.json(
@@ -62,8 +104,6 @@ export async function POST(request: Request) {
 
   try {
     const { projectId, feedbacks } = await request.json();
-    console.log("Feedbacks: ", feedbacks);
-    console.log("ProjectId: ", projectId);
     const { userId } = await auth();
 
     if (!userId) {
@@ -94,7 +134,6 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
-    console.log("Feedbacks: ", feedbacks);
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -105,7 +144,7 @@ export async function POST(request: Request) {
           {
             "title": "Brief title summarizing the overall feedback",
             "description": "",
-            "overallRating": 0.0,
+            "overallRating": 0.0, 
             "diagramData": {
               "ratingDistribution": {
                 "5-star": {"count": 0, "percentage": 0, "keywords": []},
@@ -143,11 +182,26 @@ export async function POST(request: Request) {
       response_format: { type: "json_object" },
     });
 
+    const description = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content: `${prompt}
+          Parse and analyze this feedback: ${JSON.stringify(feedbacks)}`,
+        },
+      ],
+      temperature: 0.2, // Lower temperature for more consistent output
+    });
+
+
     const result = JSON.parse(completion.choices[0].message?.content || "{}");
+    const desc = description.choices[0].message?.content;
+
     const analysis = await prisma.analysis.create({
       data: {
         title: result.title,
-        description: result.description,
+        description: desc ?? "",
         overallRating: result.overallRating,
         createdBy: `${user.first_name} ${user.last_name}`,
         projectRoom: {
