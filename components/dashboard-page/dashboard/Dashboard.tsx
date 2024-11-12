@@ -2,7 +2,7 @@ import React from "react";
 import DashboardHeader from "./DashboardHeader";
 import Members from "./Members";
 import Feedbacks from "./feedbacks/Feedbacks";
-import TopVotedFeedbacks from "./TopVotedFeedbacks";
+import CodeImplementation from "./CodeImplementation";
 import { ProjectRoom } from "../../../lib/Types";
 
 function Dashboard({ projectRoom }: { projectRoom: ProjectRoom }) {
@@ -14,7 +14,7 @@ function Dashboard({ projectRoom }: { projectRoom: ProjectRoom }) {
       <div className="grid lg:grid-cols-2 mt-12 grid-cols-1 gap-6">
         <div className="col-span-1">
           <Members projectRoom={projectRoom} />
-          <TopVotedFeedbacks projectRoomId={projectRoomId} />
+          <CodeImplementation />
         </div>
         <div className="col-span-1">
           <Feedbacks projectRoomId={projectRoomId} />

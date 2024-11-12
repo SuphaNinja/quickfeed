@@ -28,12 +28,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-// Assuming these types are defined elsewhere
-type ProjectRoom = {
-  id: string
-  users: ProjectRoomUser[]
-}
-
 type ProjectRoomUser = {
   id: string
   userId: string
@@ -42,6 +36,10 @@ type ProjectRoomUser = {
   email: string
   image?: string
   role?: string
+}
+type ProjectRoom = {
+  id: string
+  users: any
 }
 
 export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {

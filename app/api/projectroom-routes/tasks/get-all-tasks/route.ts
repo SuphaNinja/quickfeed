@@ -26,4 +26,5 @@ export async function POST(request: NextRequest) {
         console.error('Error getting tasks:', error);
         return NextResponse.json({ error: "Failed to get tasks" }, { status: 500 });
     }
+
 }
