@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import PricingCard from "@/components/landing/pricing/PricingCard"
+import PricingCard from "./PricingCard"
 
 export type PricingPlan = {
     title: string
@@ -10,7 +10,11 @@ export type PricingPlan = {
     isPopular: boolean
     features: string[]
     url: string
+    priceId: string
 }
+
+const STRIPE_MONTHLY_PRICE_ID = "price_1QKH0cBRdgPIAqxvhttqPeIO"
+const STRIPE_YEARLY_PRICE_ID = "price_1QKH0cBRdgPIAqxvmadBsciq"
 
 export const pricingPlans: PricingPlan[] = [
     {
@@ -25,7 +29,7 @@ export const pricingPlans: PricingPlan[] = [
             "Feedback overview",
             "Priority support",
         ],
-       
+        priceId: ""
     },
     {
         title: "Monthly",
@@ -39,6 +43,7 @@ export const pricingPlans: PricingPlan[] = [
             "AI-analytcs & overview",
             "Priority support",
         ],
+        priceId: STRIPE_MONTHLY_PRICE_ID
     },
     {
         title: "Yearly",
@@ -52,7 +57,7 @@ export const pricingPlans: PricingPlan[] = [
             "AI-analytcs & overview",
             "Priority support",
         ],
-    
+        priceId: STRIPE_YEARLY_PRICE_ID
     },
 ]
 

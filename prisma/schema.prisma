@@ -9,11 +9,22 @@ datasource db {
 }
 
 model Subscription {
-  id                   Int     @id @default(autoincrement())
+  id                   Int      @id @default(autoincrement())
   userId               String
   stripeCustomerId     String
-  stripeSubscriptionId String
-  subscribed           Boolean
+  stripeSubscriptionId String   @unique
+  status               String   // e.g., "active", "trialing", "canceled", "past_due"
+  planId               String   // Stripe plan ID
+  interval             String   // "month" or "year"
+  amount               Float    // in cents
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  cancelAtPeriodEnd    Boolean  @default(false)
+  canceledAt           DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 }
 
 model User {

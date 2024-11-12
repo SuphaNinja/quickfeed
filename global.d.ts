@@ -6,4 +6,10 @@ declare namespace JSX {
       HTMLElement
     > & { project: string };
   }
+  interface IntrinsicElements {
+    "stripe-pricing-table": React.DetailedHTMLProps<
+      React.HTMLAttributes<HTMLElement>,
+      HTMLElement
+    >
+  }
 }
