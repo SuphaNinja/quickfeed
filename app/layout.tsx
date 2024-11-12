@@ -38,7 +38,6 @@ export default function RootLayout({
                 src="https://quickfeedwidgetlight.netlify.app/widget.js"
                 strategy="afterInteractive"
               />
-              <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
               <Toaster />
             </ThemeProvider>
           </Provider>

@@ -15,11 +15,11 @@ type ProjectTasksResponse = Task & {
 }
 
 // Custom hook to fetch tasks for a specific project room
-export const useProjectTasks = (projectRoomId: string) => {
+export const useAllTasks = (projectRoomId: string) => {
     return useQuery<ProjectTasksResponse[], Error>({
-        queryKey: ['projectTasks', projectRoomId],
+        queryKey: ['allTasks', projectRoomId],
         queryFn: async () => {
-            const { data } = await api.post<ProjectTasksResponse[]>('/projectroom-routes/dashboard/get-tasks', { projectRoomId })
+            const { data } = await api.post<ProjectTasksResponse[]>('/projectroom-routes/tasks/get-all-tasks', { projectRoomId })
             return data
         },
         enabled: !!projectRoomId,

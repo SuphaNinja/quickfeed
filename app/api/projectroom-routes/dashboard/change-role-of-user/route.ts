@@ -6,10 +6,6 @@ export async function POST(request: NextRequest) {
     try {
         const { userId } = await auth();
         const { projectRoomId, email, role } = await request.json();
-        console.log("projectRoomId: ",projectRoomId)
-        console.log("projectRoomId: ",email)
-        console.log("projectRoomId: ",projectRoomId)
-        console.log("projectRoomId: ",projectRoomId)
         if (!userId || !projectRoomId) {
             return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
         }

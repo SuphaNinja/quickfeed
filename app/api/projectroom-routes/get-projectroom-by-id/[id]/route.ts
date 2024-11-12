@@ -8,7 +8,9 @@ export async function GET(
 ) {
   try {
     const { id } = params;
-
+    if (!id) {
+      return NextResponse.json({ error: "No projectId provided" }, { status: 404 });
+    }
     const userId = await auth()
 
     if (!userId) {

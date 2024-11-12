@@ -68,9 +68,7 @@ export default function PricingCard({
                 </ul>
             </div>
             <div className="p-6 pt-0">
-                <CheckoutButton priceId={priceId}>
-                   
-                </CheckoutButton>
+                <CheckoutButton priceId={priceId} planType={title} />
             </div>
         </div>
     );

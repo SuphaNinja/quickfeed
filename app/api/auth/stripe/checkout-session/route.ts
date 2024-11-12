@@ -9,18 +9,25 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(req: Request) {
 
   const { userId } = await auth();
-  console.log("USERID FROM CHECKOUT: ", userId)
-  console.log("USERID FROM CHECKOUT: ", userId)
+
   try {
+    
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    const { priceId } = await req.json();
-    console.log("PRICE ID : ", priceId)
+    const { priceId, planType } = await req.json();
+
+    if (!planType) {
+      return new NextResponse("No planType", { status: 401 });
+    }
+    if (!priceId) {
+      return new NextResponse("No priceId ", { status: 401 });
+    }
     // Create a Stripe customer with Clerk's userId in metadata
     const customer = await stripe.customers.create({
       metadata: {
-        clerkUserId: userId
+        clerkUserId: userId,
+        planType: planType
       }
     });
 
@@ -37,11 +44,13 @@ export async function POST(req: Request) {
       cancel_url: `http://localhost:3000/canceled`,
       subscription_data: {
         metadata: {
-          clerkUserId: userId
+          clerkUserId: userId,
+        planType: planType
         }
       },
       metadata: {
-        clerkUserId: userId
+        clerkUserId: userId,
+        planType: planType
       }
     });
 

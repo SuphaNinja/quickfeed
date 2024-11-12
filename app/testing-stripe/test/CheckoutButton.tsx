@@ -8,13 +8,12 @@ import axios from 'axios'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-export default function CheckoutButton({ priceId }: { priceId: string }) {
+export default function CheckoutButton({ priceId, planType }: { priceId: string, planType: string }) {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
-    console.log(priceId)
+
     const createCheckoutSession = async (priceId: string) => {
-        
-        const response = await axios.post('/api/auth/stripe/checkout-session', { priceId })
+        const response = await axios.post('/api/auth/stripe/checkout-session', { priceId, planType })
         return response.data
     }
 
