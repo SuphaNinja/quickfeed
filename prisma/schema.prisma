@@ -9,37 +9,37 @@ datasource db {
 }
 
 model Subscription {
-  id                   Int      @id @default(autoincrement())
+  id                   String   @id @default(cuid())
   userId               String
   stripeCustomerId     String
-  stripeSubscriptionId String   @unique
-  status               String   // e.g., "active", "trialing", "canceled", "past_due"
-  planId               String   // Stripe plan ID
-  interval             String   // "month" or "year"
-  amount               Float    // in cents
-  currentPeriodStart   DateTime
-  currentPeriodEnd     DateTime
-  trialStart           DateTime?
-  trialEnd             DateTime?
-  cancelAtPeriodEnd    Boolean  @default(false)
-  canceledAt           DateTime?
+  stripeSubscriptionId String   
   createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  endsAt               DateTime
+  planId               String
+  amount               Float
+  subscriptionType     String
+  status               String
+
+  @@index([userId])
+  @@index([stripeCustomerId])
 }
 
 model User {
-  id               Int               @id @default(autoincrement())
-  first_name       String?
-  last_name        String?
-  email            String            @unique
-  profileImageUrl  String?
-  role             String            @default("user")
-  userId           String            @unique
-  subscription     String?
-  isSubscribed     Boolean           @default(false)
-  created_at       DateTime          @default(now())
-  updated_at       DateTime          @updatedAt
-  projectRoomsUser ProjectRoomUser[]
+  id                      Int               @id @default(autoincrement())
+  first_name              String?
+  last_name               String?
+  email                   String            @unique
+  phone                   String?
+  profileImageUrl         String?
+  role                    String            @default("user")
+  userId                  String            @unique
+  subscriptionType        String?
+  hasHadTrial             Boolean           @default(false)
+  subscriptionEndsAt      DateTime?
+  isSubscribed            Boolean           @default(false)
+  created_at              DateTime          @default(now())
+  updated_at              DateTime          @updatedAt
+  projectRoomsUser        ProjectRoomUser[]
 }
 
 model ProjectRoom {

@@ -38,52 +38,42 @@ export async function POST(req: NextRequest) {
 
 async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const clerkUserId = subscription.metadata.clerkUserId
+  const planType = subscription.metadata.planType
   if (!clerkUserId) {
     console.error(`No Clerk user ID found for Stripe customer: ${subscription.customer}`)
     return
   }
-  console.log("SUBSCRIPTION: ",subscription)
+  
   const subscriptionData = {
     userId: clerkUserId,
     stripeSubscriptionId: subscription.id,
     stripeCustomerId: subscription.customer as string,
-    status: subscription.status,
+    status: subscription.status === "active" ? "active" : "inactive",
     planId: subscription.items.data[0].plan.id,
-    interval: subscription.items.data[0].plan.interval,
+    subscriptionType: planType,
     amount: subscription.items.data[0].plan.amount ?? 0,
-    currentPeriodStart: new Date(subscription.current_period_start * 1000),
-    currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-    trialStart: subscription.trial_start ? new Date(subscription.trial_start * 1000) : null,
-    trialEnd: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
-    cancelAtPeriodEnd: subscription.cancel_at_period_end,
-    canceledAt: subscription.canceled_at ? new Date(subscription.canceled_at * 1000) : null,
+    createdAt: new Date(subscription.current_period_start * 1000),
+    endsAt: new Date(subscription.current_period_end * 1000),
   }
-
+console.log("SUBSCRIPTION: ",subscriptionData)
   await prisma.$transaction(async (prisma) => {
-    // Update or create the subscription
-    const subscriptionExists = await prisma.subscription.findFirst({
-      where: {userId: clerkUserId}
+
+    await prisma.subscription.updateMany({
+      where: {userId: clerkUserId},
+      data: { status: "inactive"}
     })
-    
-    if (subscriptionExists) {
-      await prisma.subscription.updateMany({
-        where: {userId: clerkUserId},
-        data: { status: "terminated"}
-      })
-    }
+
     await prisma.subscription.create({
       data: subscriptionData
     })
-    // Update the user's subscription status
-    const subscriptionType = subscription.status === 'active' || subscription.status === 'trialing'
-      ? subscriptionData.interval === 'year' ? 'yearly' : 'monthly'
-      : 'free'
 
     await prisma.user.update({
       where: { userId: clerkUserId },
       data: {
-        isSubscribed: subscription.status === 'active' || subscription.status === 'trialing',
-        subscription: subscriptionType,
+        isSubscribed: true,
+        subscriptionType: planType,
+        subscriptionEndsAt: subscriptionData.endsAt,
+        hasHadTrial: true
       },
     })
   })
@@ -103,8 +93,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     await prisma.subscription.update({
       where: { stripeSubscriptionId: subscription.id },
       data: {
-        status: 'canceled',
-        canceledAt: new Date(),
+        status: 'inactive',
       },
     })
 
@@ -113,7 +102,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
       where: { userId: clerkUserId },
       data: {
         isSubscribed: false,
-        subscription: 'no subscription',
+        subscriptionType: 'no subscription',
       },
     })
   })

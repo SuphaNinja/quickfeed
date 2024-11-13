@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PricingPlan } from "../test/Pricing";
 import CheckoutButton  from "./CheckoutButton";
+import FreeTrialButton from "./FreeTrialButton";
 
 export default function PricingCard({
     title,
@@ -68,7 +69,12 @@ export default function PricingCard({
                 </ul>
             </div>
             <div className="p-6 pt-0">
-                <CheckoutButton priceId={priceId} planType={title} />
+                {title === "Free" ? (
+                    <FreeTrialButton/>
+                ): (
+                    <CheckoutButton priceId={priceId} planType={title} />
+                )}
+                
             </div>
         </div>
     );

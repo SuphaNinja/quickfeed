@@ -17,12 +17,12 @@ type SortType = "newest" | "oldest" | "status" | "priority";
 export default function AllTasks({ isAdmin }: { isAdmin: boolean }) {
   const [sort, setSort] = useState<SortType>("newest");
   const params = useParams()
-  const { data: myTasks, isLoading, isError } = useQuery<{ data: Task[] }>({
+  const { data: allTasks, isLoading, isError } = useQuery<{ data: Task[] }>({
     queryKey: ["allTasks", params.roomId],
     queryFn: () => axios.post("/api/projectroom-routes/tasks/get-all-tasks", { projectRoomId: params.roomId }),
   })
 
-  const tasks: Task[] = myTasks?.data || [];
+  const tasks: Task[] = allTasks?.data || [];
   const sortedTasks = sortTasks(tasks, sort);
 
   if (isError) return null
@@ -47,7 +47,7 @@ export default function AllTasks({ isAdmin }: { isAdmin: boolean }) {
             ))}
           </div>
         )}
-        {myTasks?.data.length === 0 && (
+        {allTasks?.data.length === 0 && (
           <Card>
             <CardContent className="flex items-center justify-center p-6">
               <AlertCircle className="mr-2 h-4 w-4 opacity-70" />
