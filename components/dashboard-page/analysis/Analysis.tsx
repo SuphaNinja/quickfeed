@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { ProjectRoom, Feedback, Analysis as AnalysisTypes } from "@/lib/Types";
 import AnalysisCharts from "./AnalysisCharts";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Analysis({
@@ -40,6 +40,9 @@ export function CreateNewAnalysis({
   const [countdown, setCountdown] = useState(0);
   const queryClient = useQueryClient();
   const params = useParams();
+  const sendDataCalledRef = useRef(false)
+
+  const cooldownPeriod = 7 * 24 * 60 * 60 * 1000
 
   const { mutate: sendData, isPending } = useMutation({
     mutationFn: () =>
@@ -58,6 +61,8 @@ export function CreateNewAnalysis({
       queryClient.invalidateQueries({
         queryKey: ["projectRoom", params.roomId],
       });
+
+      setCountdown(cooldownPeriod)
     },
     onError: (error: Error) => {
       toast({
@@ -70,31 +75,33 @@ export function CreateNewAnalysis({
   });
 
   useEffect(() => {
-    const cooldownPeriod = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-    const now = new Date().getTime();
-    const lastAnalysisTime = lastAnalysis
-      ? new Date(lastAnalysis.createdAt).getTime()
-      : 0;
-    const timeElapsed = now - lastAnalysisTime;
-    const remainingTime = Math.max(cooldownPeriod - timeElapsed, 0);
+    const updateCountdown = () => {
+      const now = new Date().getTime()
+      const lastAnalysisTime = lastAnalysis
+        ? new Date(lastAnalysis.createdAt).getTime()
+        : 0
+      const timeElapsed = now - lastAnalysisTime
+      const remainingTime = Math.max(cooldownPeriod - timeElapsed, 0)
 
-    setCountdown(remainingTime);
+      setCountdown(remainingTime)
+    }
+
+    // Initial update
+    updateCountdown()
 
     const timer = setInterval(() => {
-      setCountdown((prevCountdown) => {
-        if (prevCountdown <= 1000) {
-          clearInterval(timer);
-          if (feedbacks.length >= 15) {
-            sendData();
-          }
-          return 0;
-        }
-        return prevCountdown - 1000;
-      });
-    }, 1000);
+      updateCountdown()
 
-    return () => clearInterval(timer);
-  }, [lastAnalysis, feedbacks, sendData]);
+      if (countdown <= 1000) {
+        if (feedbacks.length >= 15 && !sendDataCalledRef.current && !isAnalyzing) {
+          sendDataCalledRef.current = true
+          sendData()
+        }
+      }
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [feedbacks.length, lastAnalysis, sendData, countdown, isAnalyzing])
 
   const formatCountdown = (ms: number) => {
     const days = Math.floor(ms / (24 * 60 * 60 * 1000));
