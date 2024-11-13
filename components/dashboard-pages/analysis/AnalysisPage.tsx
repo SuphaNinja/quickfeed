@@ -8,6 +8,7 @@ import AnalysisCharts from "./AnalysisCharts";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MessageSquareWarningIcon } from "lucide-react";
 
 export default function Analysis({
   projectRoom,
@@ -15,7 +16,7 @@ export default function Analysis({
   projectRoom: ProjectRoom;
 }) {
   return (
-    <div className="space-y-5 md:p-5">
+    <div className="space-y-5 md:p-10 px-5">
       <CreateNewAnalysis
         feedbacks={projectRoom.feedbacks}
         lastAnalysis={projectRoom.analyses[0]}
@@ -113,16 +114,17 @@ export function CreateNewAnalysis({
 
   if (feedbacks.length < 15) {
     return (
-      <Card>
+      <Card className="bg-yellow-50 text-yellow-700 border-yellow-400  border-2">
         <CardHeader>
-          <CardTitle>Not Enough Feedback</CardTitle>
+          <CardTitle className="flex items-center">
+            Not Enough Feedback
+            <MessageSquareWarningIcon className="size-6 ml-2" />
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p>
+        <CardContent className="text-sm">
             You currently have {feedbacks.length}
             {feedbacks.length === 1 ? " feedback" : " feedbacks"}. You need at
             least 15 feedbacks before you can analyze the data.
-          </p>
         </CardContent>
       </Card>
     );

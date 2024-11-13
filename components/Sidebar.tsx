@@ -11,6 +11,7 @@ import axios from 'axios'
 import {UserButton} from "@clerk/nextjs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ProjectRoom, ProjectRoomUser } from '@/lib/Types'
+import CreateNewProject from '../app/create-new-project/page'
 
 const tabs = [
     { name: 'Dashboard', icon: LayoutDashboard },
@@ -84,17 +85,18 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
                         <li key={tab.name}>
                             <Button
                                 variant="ghost"
-                                className="w-full justify-start h-12 px-4 text-left font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                className="w-full justify-start h-12 px-4 text-left font-medium hover:bg-gray-100 dark:hover:bg-[#141414] transition-colors"
                                 onClick={() => {
                                     setActiveTab(tab.name);
                                     setIsOpen(false);
                                 }}
                             >
-                                <tab.icon className="mr-3 h-5 w-5" />
+                                <tab.icon className="mr-3 size-5" />
                                 {tab.name}
                             </Button>
                         </li>
                     ))}
+                    <CreateNewProject />
                 </ul>
             </nav>
             <div className="p-4">
@@ -129,7 +131,7 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon" className="md:hidden">
-                        <Menu />
+                        <Menu  className='size-10'/>
                         <span className="sr-only">Open menu</span>
                     </Button>
                 </SheetTrigger>

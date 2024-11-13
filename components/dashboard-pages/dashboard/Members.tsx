@@ -49,7 +49,6 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const { userId } = useAuth()
-  const { user } = useUser()
   const users: ProjectRoomUser[] = projectRoom.users || []
 
   const isUserAdmin = (userId: string, users: ProjectRoomUser[]): boolean => {
@@ -145,10 +144,10 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
   return (
     <div className="border p-6 border-neutral-900 rounded-lg w-2xl">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
+        <h2 className="text-2xl my-2 flex items-center gap-2">
           Members{" "}
           <span role="img" aria-label="members">
-            🥳
+            🚀
           </span>
         </h2>
         {userId && isUserAdmin(userId, users) && (

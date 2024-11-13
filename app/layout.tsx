@@ -1,7 +1,7 @@
 import Provider from '@/providers/provider'
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
-import AuthWrapper from '@/components/layout/auth-wrapper'
+import AuthWrapper from '@/providers/auth-wrapper'
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
 import Script from 'next/script'

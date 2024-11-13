@@ -4,7 +4,7 @@ import { ProjectRoom, ProjectRoomUser } from '@/lib/Types'
 import MyTasks from './MyTasks'
 import AllTasks from './AllTasks';
 import { useAuth } from '@clerk/nextjs';
-import NewTaskButton from './NewTaskButton';
+import NewTaskButton from './NewTaskModal';
 
 function Tasks({ projectRoom }: { projectRoom: ProjectRoom }) {
   const { userId } = useAuth();

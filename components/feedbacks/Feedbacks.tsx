@@ -43,12 +43,11 @@ export default function Feedbacks({
 
 
   return (
-    <div className="flex flex-col md:border md:p-4 p-2 border-neutral-900 rounded-lg w-full max-w-2xl mb-10">
-      <ScrollArea className="h-[calc(100dvh-300px)]">
-        <h1 className="text-2xl font-semibold mb-6 ">
+    <div className="flex flex-col md:border p-6 border-neutral-900 rounded-lg w-full mt-12 max-h-[calc(100dvh-100px)] overflow-auto custom-scrollbar">
+        <h1 className="text-2xl font-semibold mb-5 ">
           Feedbacks <span className="wave">👋</span>
         </h1>
-        <div className="flex md:flex-row gap-2 flex-col justify-between">
+        <div className="flex md:flex-row gap-2 flex-col mb-3 justify-between">
           <FilterButtons filter={filter} setFilter={setFilter} />
           <SortSelect sort={sort} setSort={setSort} />
         </div>
@@ -58,7 +57,7 @@ export default function Feedbacks({
               <FeedbackSkeleton key={index} />
             ))
           ) : filteredAndSortedFeedbacks.length === 0 ? (
-            <div className="flex justify-center items-center h-[calc(100dvh-202px)]">
+            <div className="flex justify-center items-center h-[calc(100dvh-300px)]">
               <p className="text-center text-2xl">No feedback yet 👀</p>
             </div>
           ) : (
@@ -69,7 +68,6 @@ export default function Feedbacks({
             </ul>
           )}
         </div>
-      </ScrollArea>
     </div>
   );
 }

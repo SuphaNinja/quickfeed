@@ -1,10 +1,10 @@
 "use client";
 
-import Analysis from "@/components/dashboard-page/analysis/Analysis";
-import Dashboard from "@/components/dashboard-page/dashboard/Dashboard";
-import Feedbacks from "@/components/dashboard-page/feedbacks/Feedbacks";
-import DashboardSidebar from "@/components/dashboard-page/Sidebar";
-import Tasks from "@/components/dashboard-page/tasks/Tasks";
+import Analysis from "@/components/dashboard-pages/analysis/AnalysisPage";
+import Dashboard from "@/components/dashboard-pages/dashboard/DashboardPage";
+import DashboardSidebar from "@/components/Sidebar";
+import FeedbacksPage from "@/components/dashboard-pages/feedbacks/FeedbacksPage";
+import Tasks from "@/components/dashboard-pages/tasks/TasksPage";
 import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -43,7 +43,7 @@ function DashboardPage() {
       },
       {
         name: "Feedbacks",
-        component: <Feedbacks projectRoom={projectRoom} />,
+        component: <FeedbacksPage projectRoom={projectRoom} />,
       },
       {
         name: "Analysis",

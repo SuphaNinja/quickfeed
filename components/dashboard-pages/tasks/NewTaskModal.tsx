@@ -10,11 +10,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { PlusCircle } from 'lucide-react'
+import { Check, PlusCircle } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
-
-export default function NewTaskButton({ projectRoom }: { projectRoom: ProjectRoom }) {
+export default function NewTaskModal({ projectRoom }: { projectRoom: ProjectRoom }) {
     const queryClient = useQueryClient()
     const users: ProjectRoomUser[] = projectRoom.users || []
 
@@ -35,7 +34,6 @@ export default function NewTaskButton({ projectRoom }: { projectRoom: ProjectRoo
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["myTasks", projectRoom.id] })
             queryClient.invalidateQueries({ queryKey: ["allTasks", projectRoom.id] })
-            // Reset form fields and close modal
             setTitle("")
             setDescription("")
             setPriority("")
@@ -68,8 +66,8 @@ export default function NewTaskButton({ projectRoom }: { projectRoom: ProjectRoo
                     <DialogTitle className="text-2xl font-semibold text-primary">Create New Task</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-                    <div className="space-y-4">
-                        <Label htmlFor="title" className="text-sm font-medium text-gray-700">Title</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="title" className="text-sm font-medium text-white">Title</Label>
                         <Input
                             id="title"
                             value={title}
@@ -78,8 +76,8 @@ export default function NewTaskButton({ projectRoom }: { projectRoom: ProjectRoo
                             className="w-full"
                         />
                     </div>
-                    <div className="space-y-4">
-                        <Label htmlFor="description" className="text-sm font-medium text-gray-700">Description</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="description" className="text-sm font-medium text-white">Description</Label>
                         <Textarea
                             id="description"
                             value={description}
@@ -88,8 +86,8 @@ export default function NewTaskButton({ projectRoom }: { projectRoom: ProjectRoo
                             className="w-full"
                         />
                     </div>
-                    <div className="space-y-4">
-                        <Label htmlFor="priority" className="text-sm font-medium text-gray-700">Priority</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="priority" className="text-sm font-medium text-white">Priority</Label>
                         <Select value={priority} onValueChange={setPriority} required>
                             <SelectTrigger id="priority">
                                 <SelectValue placeholder="Select priority" />
@@ -101,8 +99,8 @@ export default function NewTaskButton({ projectRoom }: { projectRoom: ProjectRoo
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="space-y-4">
-                        <Label htmlFor="assignee" className="text-sm font-medium text-gray-700">Assignee</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="assignee" className="text-sm font-medium text-white">Assignee</Label>
                         <Select value={assigneeId} onValueChange={setAssigneeId} required>
                             <SelectTrigger id="assignee">
                                 <SelectValue placeholder="Select assignee" />
@@ -110,13 +108,7 @@ export default function NewTaskButton({ projectRoom }: { projectRoom: ProjectRoo
                             <SelectContent>
                                 {users.map((user) => (
                                     <SelectItem key={user.id} value={user.id} className="flex items-center space-x-2 p-2">
-                                        <Avatar className="h-6 w-6">
-                                            {user.image && 
-                                            <   AvatarImage src={user.image} alt={`${user.first_name} ${user.last_name}`} />
-                                            }
-                                                <AvatarFallback>{user.first_name[0]}{user.first_name[1]}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex flex-col">
+                                        <div className="flex items-center space-x-2 ml-5">
                                             <span className="font-medium">{user.first_name} {user.last_name}</span>
                                             <span className="text-xs text-muted-foreground">{user.role}</span>
                                         </div>
