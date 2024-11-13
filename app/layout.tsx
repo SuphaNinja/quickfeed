@@ -1,8 +1,7 @@
-import Provider from '@/app/provider'
+import Provider from '@/providers/provider'
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import AuthWrapper from '@/components/layout/auth-wrapper'
-import { Analytics } from "@vercel/analytics/react"
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
 import Script from 'next/script'
@@ -41,7 +40,6 @@ export default function RootLayout({
               <Toaster />
             </ThemeProvider>
           </Provider>
-          <Analytics />
         </body>
       </html>
     </AuthWrapper>

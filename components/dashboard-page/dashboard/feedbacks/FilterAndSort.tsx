@@ -3,14 +3,14 @@ import { Feedback } from "./Feedbacks";
 import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export type FilterType = "all" | "bad" | "okay" | "good";
+export type FilterType = "all" | "Negative" | "Neutral" | "Positive";
 type SortType = "newest" | "oldest" | "last7days" | "last30days";
 
 export function filterFeedback(feedback: Feedback, filter: FilterType) {
     if (filter === "all") return true;
-    if (filter === "bad" && (feedback.rating === 1 || feedback.rating === 2)) return true;
-    if (filter === "okay" && feedback.rating === 3) return true;
-    if (filter === "good" && (feedback.rating === 4 || feedback.rating === 5)) return true;
+    if (filter === "Negative" && (feedback.rating === 1 || feedback.rating === 2)) return true;
+    if (filter === "Neutral" && feedback.rating === 3) return true;
+    if (filter === "Positive" && (feedback.rating === 4 || feedback.rating === 5)) return true;
     return false;
 }
 
@@ -46,11 +46,12 @@ export function FilterButtons({ filter, setFilter }: { filter: FilterType; setFi
 
     const filterButtons: { type: FilterType; label: string; className: string }[] = [
         { type: "all", label: "All", className: "bg-blue-500 hover:bg-blue-600" },
-        { type: "good", label: "Good", className: "bg-[#343A40] dark:bg-[#E2E2E2]" },
-        { type: "okay", label: "Okay", className: "bg-[#343A40] dark:bg-[#E2E2E2]" },
-        { type: "bad", label: "Bad", className: "bg-[#343A40] dark:bg-[#E2E2E2]" },
+        { type: "Positive", label: "Positive", className: "bg-slate-500 dark:bg-[#E2E2E2]" },
+        { type: "Neutral", label: "Neutral", className: "bg-[#343A40] dark:bg-[#E2E2E2]" },
+        { type: "Negative", label: "Negative", className: "bg-[#343A40] dark:bg-[#E2E2E2]" },
     ];
     
+
     return (
         <div className="flex justify-evenly md:justify-start md:gap-2">
             {filterButtons.map((button) => (

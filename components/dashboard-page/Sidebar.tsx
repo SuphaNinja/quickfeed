@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { LayoutDashboard, MessageSquare, BarChart, CheckSquare, Folder, Menu } from "lucide-react"
+import { LayoutDashboard, MessageSquare, BarChart, CheckSquare, UserSearch, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
@@ -17,7 +17,7 @@ const tabs = [
     { name: 'Feedbacks', icon: MessageSquare },
     { name: 'Analysis', icon: BarChart },
     { name: 'Tasks', icon: CheckSquare },
-    { name: 'Project Page', icon: Folder },
+    { name: 'Team Members', icon: UserSearch },
 ]
 
 interface DashboardSidebarProps {

@@ -1,14 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import axios from 'axios'
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useRouter } from 'next/navigation'
+import { useCreateProject } from '@/hooks/functions/useCreateProject'
 interface ProjectData {
     title: string
     description: string
@@ -21,22 +20,9 @@ export default function CreateNewProject() {
         description: '',
         url: ''
     })
-    const [ isCreating, setIsCreating ] = useState(false)
 
-    const router = useRouter()
 
-    const createProject = useMutation({
-        mutationFn: (data: ProjectData) => axios.post('/api/project-routes/create-project', data),
-        onMutate: () => setIsCreating(true),
-        onSettled: (data) => {
-            setIsCreating(false)
-            if(data?.data.id) {
-                router.push(`/dashboard/${data.data.id}`)
-            } else {
-                router.push("/")
-            }
-        }
-    })
+    const createProject = useCreateProject()
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -83,8 +69,8 @@ export default function CreateNewProject() {
                         required
                     />
                 </div>
-                <Button type="submit" disabled={isCreating}>
-                    {isCreating ? 'Creating...' : 'Create Project'}
+                <Button type="submit" disabled={createProject.isPending}>
+                    {createProject.isPending ? 'Creating...' : 'Create Project'}
                 </Button>
             </form>
             {createProject.isError && (
