@@ -7,12 +7,23 @@ import FeedbacksPage from "@/components/dashboard-pages/feedbacks/FeedbacksPage"
 import Tasks from "@/components/dashboard-pages/tasks/TasksPage";
 import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useProject } from "@/hooks/functions/useProject";
 
 function DashboardPage() {
   const params = useParams();
-  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const storedTab = localStorage.getItem('activeTab')
+      return storedTab || "Dashboard"
+    }
+    return "Dashboard"
+  })
+  useEffect(() => {
+    // Update localStorage when activeTab changes
+    localStorage.setItem('activeTab', activeTab)
+  }, [activeTab])
+  
   const {
     data: projectRoom,
     isError,

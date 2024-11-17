@@ -102,7 +102,7 @@ export function CreateNewAnalysis({
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [feedbacks.length, lastAnalysis, sendData, countdown, isAnalyzing])
+  }, [feedbacks.length, lastAnalysis, sendData, isAnalyzing])
 
   const formatCountdown = (ms: number) => {
     const days = Math.floor(ms / (24 * 60 * 60 * 1000));
