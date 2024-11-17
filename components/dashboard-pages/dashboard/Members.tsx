@@ -1,16 +1,14 @@
 'use client'
 
-import React, { useState } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { UserPlus, Trash2 } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
-import { useAuth } from "@clerk/nextjs"
-import { useUser } from "@clerk/nextjs"
+import React, { useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { UserPlus, Trash2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import axios from "axios";
+import { useAuth } from "@clerk/nextjs";
 import {
   Dialog,
   DialogContent,
@@ -19,130 +17,125 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
 type ProjectRoomUser = {
-  id: string
-  userId: string
-  first_name: string
-  last_name: string
-  email: string
-  image?: string
-  role?: string
-}
+  id: string;
+  userId: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  image?: string;
+  role?: string;
+};
 type ProjectRoom = {
-  id: string
-  users: any
-}
+  id: string;
+  users: any;
+};
 
 export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
-  const queryClient = useQueryClient()
-  const [email, setEmail] = useState("")
-  const [error, setError] = useState("")
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [users, setUsers] = useState<ProjectRoomUser[]>(projectRoom.users || []);
 
-  const { userId } = useAuth()
-  const users: ProjectRoomUser[] = projectRoom.users || []
+  const { userId } = useAuth();
 
   const isUserAdmin = (userId: string, users: ProjectRoomUser[]): boolean => {
-    const user = users.find((user) => user.userId === userId)
-    return user?.role === "admin"
-  }
+    const user = users.find((user) => user.userId === userId);
+    return user?.role === "admin";
+  };
 
   const getRoleColor = (role: string) => {
     switch (role?.toLowerCase()) {
       case "admin":
-        return "bg-emerald-500/10 text-emerald-500"
+        return "bg-emerald-500/10 text-emerald-500";
       case "developer":
-        return "bg-emerald-500/10 text-emerald-500"
+        return "bg-emerald-500/10 text-emerald-500";
       case "marketing":
-        return "bg-pink-500/10 text-pink-500"
+        return "bg-pink-500/10 text-pink-500";
       default:
-        return "bg-gray-500/10 text-gray-500"
+        return "bg-gray-500/10 text-gray-500";
+    }
+  };
+
+  const getInitials = (first_name: string, last_name: string) => {
+    return `${first_name[0] || ""}${last_name[0] || ""}`.toUpperCase();
+  };
+
+  const validateEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+
+  const handleDeleteUser = async (removeUserId: string) => {
+    try {
+      setIsPending(true);
+      await axios.post("/api/projectroom-routes/dashboard/remove-user-from-projectroom", {
+        projectRoomId: projectRoom.id,
+        removeUserId,
+      });
+      setUsers(users.filter((user) => user.userId !== removeUserId));
+    } catch {
+      alert("Failed to remove user");
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  const handleRoleChange = async (email: string, newRole: string) => {
+    try {
+      setIsPending(true);
+      await axios.post("/api/projectroom-routes/dashboard/change-role-of-user", {
+        projectRoomId: projectRoom.id,
+        email,
+        role: newRole,
+      });
+      setUsers(
+        users.map((user) =>
+          user.email === email ? { ...user, role: newRole } : user
+        )
+      );
+    } catch {
+      alert("Failed to update role");
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  const inviteUser = async (email: string) => {
+    try {
+      await axios.post("/api/projectroom-routes/dashboard/add-user-to-projectroom", {
+        email,
+        projectRoomId: projectRoom.id,
+      })
+      setEmail("")  // Clear input
+      setIsDialogOpen(false)  // Close dialog
+    } catch (error: any) {
+      setError(error.response?.data?.error || "An error occurred while inviting the user.")
     }
   }
 
-  const getInitials = (first_name: string, last_name: string) => {
-    return `${first_name[0] || ""}${last_name[0] || ""}`.toUpperCase()
-  }
-
-  const validateEmail = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return regex.test(email)
-  }
-
-  const inviteUserMutation = useMutation({
-    mutationFn: (email: string) =>
-      axios.post("/api/projectroom-routes/dashboard/add-user-to-projectroom", {
-        email,
-        projectRoomId: projectRoom.id,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["projectRoom", projectRoom.id],
-      })
-      setIsDialogOpen(false)
-      setEmail("")
-    },
-    onError: (error: any) => {
-      setError(
-        error.response?.data?.error ||
-          "An error occurred while inviting the user."
-      )
-    },
-  })
-
-  const deleteUserFromProject = useMutation({
-    mutationFn: (removeUserId: string) =>
-      axios.post(
-        "/api/projectroom-routes/dashboard/remove-user-from-projectroom",
-        { projectRoomId: projectRoom.id, removeUserId }
-      ),
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: ["projectRoom", projectRoom.id],
-      }),
-  })
-
-  const changeRoleOfUser = useMutation({
-    mutationFn: ({ email, role }: { email: string; role: string }) =>
-      axios.post("/api/projectroom-routes/dashboard/change-role-of-user", {
-        projectRoomId: projectRoom.id,
-        email,
-        role,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["projectRoom", projectRoom.id],
-      })
-    },
-  })
-
-  const handleRoleChange = (email: string, newRole: string) => {
-    changeRoleOfUser.mutate({ email, role: newRole })
-  }
 
   const handleInvite = () => {
     if (!validateEmail(email)) {
       setError("Please enter a valid email address.")
       return
     }
-    inviteUserMutation.mutate(email)
-  }
-
-  const handleDeleteUser = (removeUserId: string) => {
-    deleteUserFromProject.mutate(removeUserId)
+    inviteUser(email)
   }
 
   return (
-    <div className=" p-6 border border-[#141414] rounded-lg w-2xl">
+    <div className="p-6 border border-[#141414] rounded-lg w-2xl">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl my-2 flex items-center gap-2">
           Members{" "}
@@ -171,8 +164,8 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
                   placeholder="Enter email to invite"
                   value={email}
                   onChange={(e) => {
-                    setEmail(e.target.value)
-                    setError("")
+                    setEmail(e.target.value);
+                    setError("");
                   }}
                 />
                 {error && (
@@ -182,8 +175,8 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
                 )}
               </div>
               <DialogFooter>
-                <Button onClick={handleInvite} disabled={inviteUserMutation.isPending}>
-                  {inviteUserMutation.isPending ? "Inviting..." : "Send Invite"}
+                <Button onClick={handleInvite} disabled={isPending}>
+                  {isPending ? "Inviting..." : "Send Invite"}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -224,7 +217,7 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
                   onValueChange={(newRole) =>
                     handleRoleChange(user.email, newRole)
                   }
-                  disabled={changeRoleOfUser.isPending}
+                  disabled={isPending}
                 >
                   <SelectTrigger
                     className={`w-[100px] h-6 px-2.5 border-0 ${getRoleColor(
@@ -250,7 +243,7 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
                   size="icon"
                   className="text-red-500 hover:text-red-700"
                   onClick={() => handleDeleteUser(user.userId)}
-                  disabled={deleteUserFromProject.isPending}
+                  disabled={isPending}
                   aria-label={`Delete ${user.first_name} ${user.last_name}`}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -261,5 +254,6 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
         ))}
       </div>
     </div>
-  )
+  );
 }
+

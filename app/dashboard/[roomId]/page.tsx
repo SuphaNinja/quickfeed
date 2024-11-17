@@ -56,7 +56,6 @@ function DashboardPage() {
     ];
 
     return (
-      <div>
         <div className="flex w-full h-screen">
           <div className="hidden md:block">
             <DashboardSidebar
@@ -74,7 +73,6 @@ function DashboardPage() {
             {pages.find((page) => page.name === activeTab)?.component}
           </div>
         </div>
-      </div>
     );
   }
 }
