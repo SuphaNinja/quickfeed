@@ -11,7 +11,7 @@ export default function FeedbackItem({ feedback }: { feedback: Feedback }) {
       : "bg-green-500 dark:bg-green-600";
 
   return (
-    <li className="flex justify-between gap-4 py-5 border-b border-neutral-900">
+    <li className="flex justify-between gap-4 py-5 border-b  border-[#141414]">
       <div className="flex flex-col gap-3">
         <h3 className="text-sm font-medium leading-snug flex-grow">
           {feedback.message}

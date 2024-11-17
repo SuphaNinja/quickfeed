@@ -46,7 +46,7 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
 
     const SidebarContent = () => (
         <>
-            <header className="p-6 border-b border-neutral-900">
+            <header className="p-6 border-b border border-[#141414]">
                 <div className="flex items-center space-x-4">
                     {isLoading ? (
                         <Skeleton className="h-12 w-12 rounded-full" />
@@ -104,7 +104,7 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
                     <Skeleton className="h-10 w-full" />
                 ) : currentUser?.data.projectRoomsUser.length > 0 ? (
                         <Select onValueChange={handleProjectChange} defaultValue={"123"}>
-                        <SelectTrigger className="w-full bg-[#F8F9FA] border-neutral-900 text-white dark:bg-[#09090B]">
+                        <SelectTrigger className="w-full bg-[#F8F9FA] border border-[#141414] text-white dark:bg-[#09090B]">
                             <SelectValue className='text-wh'>
                                 {selectedProject?.title}
                             </SelectValue>
@@ -140,7 +140,7 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
                     <SidebarContent />
                 </SheetContent>
             </Sheet>
-            <aside className="hidden md:flex w-[300px] h-screen border-r border-neutral-900 flex-col max-h-full bg-[#F8F9FA] dark:bg-[#09090B]">
+            <aside className="hidden md:flex w-[300px] h-screen border-r border border-[#141414] flex-col max-h-full bg-[#F8F9FA] dark:bg-[#09090B]">
                 <SidebarContent />
             </aside>
         </>

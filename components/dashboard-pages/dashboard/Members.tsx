@@ -142,7 +142,7 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
   }
 
   return (
-    <div className="border p-6 border-neutral-900 rounded-lg w-2xl">
+    <div className=" p-6 border border-[#141414] rounded-lg w-2xl">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl my-2 flex items-center gap-2">
           Members{" "}

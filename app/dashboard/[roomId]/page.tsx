@@ -23,14 +23,14 @@ function DashboardPage() {
   if (isLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2  className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
   if (isError) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-2xl text-red-700">Something went wrong</p>
       </div>
     );
   }
