@@ -18,7 +18,7 @@ type RemoveUserResponse = {
 }
 
 // Custom hook to remove a user from a project room
-export const useRemoveUserFromProjectRoom = () => {
+export const useRemoveUser = () => {
     const queryClient = useQueryClient()
 
     return useMutation<RemoveUserResponse, Error, RemoveUserInput>({
@@ -34,5 +34,5 @@ export const useRemoveUserFromProjectRoom = () => {
 }
 
 // use like this
-// const removeUserFromProjectRoom = useRemoveUserFromProjectRoom()
-// removeUserFromProjectRoom.mutate({ projectRoomId, removeUserId })
+// const removeUser = useRemoveUser()
+// removeUser.mutate({ projectRoomId, removeUserId })

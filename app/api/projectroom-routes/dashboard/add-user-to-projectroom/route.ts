@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        return NextResponse.json({ success: `User with email: ${addedUser.email} has been added to the project` }, { status: 200 });
+        return NextResponse.json( addedUser, { status: 200 });
         
     } catch (error) {
         console.error('Error adding user to project room:', error);
