@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useFeedbacks } from "@/hooks/functions/useFeedbacks";
 import { Skeleton } from "@/components/ui/skeleton";
-import FeedbackItem from "./FeedbackItem";
+import FeedbackItem, { FeedbackSkeleton } from "./FeedbackItem";
 import {
   FilterButtons,
   FilterType,
@@ -33,13 +33,13 @@ export default function Feedbacks({
 }) {
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
-  const { data: feedbacks, isLoading, isSuccess } = useFeedbacks(projectRoomId);
-  if (!isSuccess) return null;
+  const { feedbacks, isLoading, isError, error,  } = useFeedbacks(projectRoomId);
+    // if (!isSuccess) return null;
 
   const filteredAndSortedFeedbacks = feedbacks
-    .filter((feedback) => filterFeedback(feedback, filter))
-    .filter((feedback) => sortFeedback(feedback, sort))
-    .sort((a, b) => sortByDate(a, b, sort));
+    ?.filter((feedback) => filterFeedback(feedback, filter))
+    ?.filter((feedback) => sortFeedback(feedback, sort))
+    ?.sort((a, b) => sortByDate(a, b, sort));
 
 
   return (
@@ -56,13 +56,13 @@ export default function Feedbacks({
             Array.from({ length: 5 }).map((_, index) => (
               <FeedbackSkeleton key={index} />
             ))
-          ) : filteredAndSortedFeedbacks.length === 0 ? (
+          ) : filteredAndSortedFeedbacks?.length === 0 ? (
             <div className="flex justify-center items-center h-[calc(100dvh-300px)]">
               <p className="text-center text-2xl">No feedback yet 👀</p>
             </div>
           ) : (
             <ul className="flex flex-col gap-2 w-full">
-              {filteredAndSortedFeedbacks.map((feedback) => (
+              {filteredAndSortedFeedbacks?.map((feedback) => (
                 <FeedbackItem key={feedback.id} feedback={feedback} />
               ))}
             </ul>
@@ -72,20 +72,3 @@ export default function Feedbacks({
   );
 }
 
-function FeedbackSkeleton() {
-  return (
-    <div className="p-4 rounded-lg bg-zinc-900/50">
-      <div className="flex items-start justify-between gap-4 mb-2">
-        <Skeleton className="h-4 w-3/4" />
-        <Skeleton className="h-6 w-20" />
-      </div>
-      <div className="flex items-center justify-between">
-        <Skeleton className="h-4 w-1/3" />
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-8 w-16" />
-          <Skeleton className="h-8 w-16" />
-        </div>
-      </div>
-    </div>
-  );
-}

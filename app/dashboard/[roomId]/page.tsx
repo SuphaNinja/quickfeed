@@ -1,5 +1,4 @@
 "use client";
-
 import Analysis from "@/components/dashboard-pages/analysis/AnalysisPage";
 import Dashboard from "@/components/dashboard-pages/dashboard/DashboardPage";
 import DashboardSidebar from "@/components/Sidebar";
@@ -20,7 +19,6 @@ function DashboardPage() {
     return "Dashboard"
   })
   useEffect(() => {
-    // Update localStorage when activeTab changes
     localStorage.setItem('activeTab', activeTab)
   }, [activeTab])
   

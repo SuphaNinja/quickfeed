@@ -1,6 +1,7 @@
 import { Feedback } from "./Feedbacks";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, UserIcon } from "lucide-react";
+import { Skeleton } from "../ui/skeleton";
 
 export default function FeedbackItem({ feedback }: { feedback: Feedback }) {
   const ratingClass =
@@ -49,3 +50,21 @@ const formatDate = (date: string | Date | null): string => {
   if (isNaN(dateObject.getTime())) return "Invalid date";
   return dateObject.toISOString().split("T")[0];
 };
+
+export function FeedbackSkeleton() {
+  return (
+    <div className="p-4 rounded-lg bg-zinc-900/50">
+      <div className="flex items-start justify-between gap-4 mb-2">
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-6 w-20" />
+      </div>
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-4 w-1/3" />
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-8 w-16" />
+          <Skeleton className="h-8 w-16" />
+        </div>
+      </div>
+    </div>
+  );
+}
