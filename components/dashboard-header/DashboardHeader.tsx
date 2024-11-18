@@ -14,7 +14,6 @@ type DashboardHeaderProps = {
 export default function DashboardHeader({ projectRoom }: DashboardHeaderProps) {
   const feedbacks = projectRoom?.feedbacks || []
   const tasks = projectRoom?.tasks || []
-  const users = projectRoom?.users || []
 
   const { averageRating, goodPercentage } = useMemo(() => calculateRatingStats(feedbacks), [feedbacks])
   const { growth, growthPercentage } = useMemo(() => calculateFeedbackGrowth(feedbacks), [feedbacks])
@@ -68,7 +67,7 @@ export default function DashboardHeader({ projectRoom }: DashboardHeaderProps) {
               <div className="space-y-2">
                 <p className="text-sm font-medium text-neutral-600">Total users</p>
                 <div className="flex items-baseline gap-1">
-                  <p className="text-3xl font-bold text-neutral-900">{users.length}</p>
+                  <p className="text-3xl font-bold text-neutral-900">{projectRoom.users.length}</p>
                   <Users className="h-4 w-4 text-purple-600" />
                 </div>
                 <div className="flex items-center gap-2">

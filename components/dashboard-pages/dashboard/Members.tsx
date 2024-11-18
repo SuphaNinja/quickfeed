@@ -71,6 +71,7 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
   const changeUserRole = useChangeUserRole();
   const removeUser = useRemoveUser();
   const { userId } = useAuth();
+  const queryClient = useQueryClient();
 
   const isUserAdmin = (userId: string, users: ProjectRoomUser[]): boolean => {
     const user = users.find((user) => user.userId === userId);
@@ -98,6 +99,7 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
       setIsDialogOpen(false)
       setUsers(prevUsers => [...prevUsers, data])
       setEmail('')
+      queryClient.invalidateQueries({ queryKey: ['projectRoom', projectRoom.id] })
     },
   })
 
