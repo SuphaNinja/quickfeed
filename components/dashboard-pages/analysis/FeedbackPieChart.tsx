@@ -17,17 +17,25 @@ const chartColors = [
 ]
 
 export default function FeedbackPieChart({ projectRoom }: { projectRoom: ProjectRoom }) {
-    const feedbacks = projectRoom?.feedbacks || []
+    const currentDate = new Date()
+    const currentMonth = currentDate.getMonth()
+    const currentYear = currentDate.getFullYear()
+
+    const feedbacks = projectRoom?.feedbacks.filter(feedback => {
+        const feedbackDate = new Date(feedback.createdAt)
+        return feedbackDate.getMonth() === currentMonth && feedbackDate.getFullYear() === currentYear
+    }) || []
+
     const totalFeedbacks = feedbacks.length
 
     if (totalFeedbacks === 0) {
         return (
             <Card className="bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-lg overflow-hidden">
                 <CardHeader className="p-4">
-                    <CardTitle className="text-base font-medium text-white">Feedback Distribution</CardTitle>
+                    <CardTitle className="text-base font-medium text-white">This Month's Feedback Distribution</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
-                    <p className="text-sm text-gray-400">No feedback data available</p>
+                    <p className="text-sm text-gray-400">No feedback data available for this month</p>
                 </CardContent>
             </Card>
         )
@@ -102,15 +110,15 @@ export default function FeedbackPieChart({ projectRoom }: { projectRoom: Project
     return (
         <Card className="bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-lg overflow-hidden">
             <CardHeader className="p-4">
-                <CardTitle className="text-lg font-bold text-white mb-1">Feedback Distribution</CardTitle>
+                <CardTitle className="text-lg font-bold text-white mb-1">This Month's Feedback Distribution</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
                 <div className="h-[300px] flex items-center justify-center">
                     <Pie data={chartData} options={chartOptions} />
                 </div>
                 <div className="mt-4 text-center text-white">
-                    <p className="text-sm font-semibold">Total Feedbacks: {totalFeedbacks}</p>
-                    <p className="text-sm font-semibold">Average Rating: {averageRating}</p>
+                    <p className="text-sm font-semibold">Total Feedbacks This Month: {totalFeedbacks}</p>
+                    <p className="text-sm font-semibold">Average Rating This Month: {averageRating}</p>
                 </div>
             </CardContent>
         </Card>

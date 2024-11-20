@@ -24,9 +24,10 @@ const tabs = [
 interface DashboardSidebarProps {
     projectRoom: ProjectRoom;
     setActiveTab: (tab: string) => void;
+    activeTab: string;
 }
 
-export default function Component({ projectRoom, setActiveTab }: DashboardSidebarProps) {
+export default function Component({ activeTab, projectRoom, setActiveTab }: DashboardSidebarProps) {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [selectedProject, setSelectedProject] = useState(projectRoom);
@@ -85,7 +86,7 @@ export default function Component({ projectRoom, setActiveTab }: DashboardSideba
                         <li key={tab.name}>
                             <Button
                                 variant="ghost"
-                                className="w-full justify-start h-12 px-4 text-left font-medium hover:bg-gray-100 dark:hover:bg-[#141414] transition-colors"
+                                className={`${activeTab === tab.name ? 'text-white' : " text-neutral-400"}  w-full justify-start h-12 px-4 text-left font-medium hover:bg-gray-100 dark:hover:bg-[#141414] transition-colors`}
                                 onClick={() => {
                                     setActiveTab(tab.name);
                                     setIsOpen(false);

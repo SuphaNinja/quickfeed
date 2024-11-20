@@ -56,7 +56,7 @@ function DashboardPage() {
       },
       {
         name: "Analysis",
-        component: <Analysis projectRoom={projectRoom} />,
+        component: <Analysis  projectRoom={projectRoom} />,
       },
       {
         name: "Tasks",
@@ -68,6 +68,7 @@ function DashboardPage() {
         <div className="flex w-full h-screen">
           <div className="hidden md:block">
             <DashboardSidebar
+              activeTab={activeTab}
               setActiveTab={setActiveTab}
               projectRoom={projectRoom}
             />
@@ -75,6 +76,7 @@ function DashboardPage() {
           <div className="flex-1 overflow-auto">
             <div className="p-4 md:hidden">
               <DashboardSidebar
+                activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 projectRoom={projectRoom}
               />
