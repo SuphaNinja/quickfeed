@@ -32,7 +32,7 @@ export default function FeedbackPieChart({ projectRoom }: { projectRoom: Project
         return (
             <Card className="bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-lg overflow-hidden">
                 <CardHeader className="p-4">
-                    <CardTitle className="text-base font-medium text-white">This Month's Feedback Distribution</CardTitle>
+                    <CardTitle className="text-base font-medium text-white">This Month&apos;s Feedback Distribution</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
                     <p className="text-sm text-gray-400">No feedback data available for this month</p>
@@ -110,7 +110,7 @@ export default function FeedbackPieChart({ projectRoom }: { projectRoom: Project
     return (
         <Card className="bg-[#1C1C1F]/50 backdrop-blur border-[#2A2A2D] rounded-lg overflow-hidden">
             <CardHeader className="p-4">
-                <CardTitle className="text-lg font-bold text-white mb-1">This Month's Feedback Distribution</CardTitle>
+                <CardTitle className="text-lg font-bold text-white mb-1">This Month&apos;s Feedback Distribution</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
                 <div className="h-[300px] flex items-center justify-center">
