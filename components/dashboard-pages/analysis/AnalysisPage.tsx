@@ -22,7 +22,7 @@ export default function Analysis({
         lastAnalysis={projectRoom.analyses[0]}
       />
       {projectRoom.analyses.length > 0 && (
-        <AnalysisCharts analyses={projectRoom.analyses} />
+        <AnalysisCharts projectRoom={projectRoom} analyses={projectRoom.analyses} />
       )}
     </div>
   );

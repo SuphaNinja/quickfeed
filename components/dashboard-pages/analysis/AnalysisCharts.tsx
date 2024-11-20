@@ -3,26 +3,29 @@
 import React, { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Bar, Line } from "react-chartjs-2"
+import { Bar, Line, Pie } from "react-chartjs-2"
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  ArcElement,
   BarElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js"
-import { Analysis } from "../../../lib/Types"
+import { Analysis, ProjectRoom } from "../../../lib/Types"
 import dynamic from "next/dynamic"
 import { formatDate } from "date-fns"
 import GetGreeting from "@/components/GetGreeting"
+import FeedbackPieChart from "./FeedbackPieChart"
+
 
 const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false })
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend)
+ChartJS.register(CategoryScale, LinearScale, ArcElement, PointElement, LineElement, BarElement, Title, Tooltip, Legend)
 
 const chartColors = {
   primary: "rgba(149, 76, 233, 0.8)",
@@ -68,10 +71,11 @@ const chartOptions = {
   },
 }
 
-export default function DarkAnalysisDashboard({ analyses }: { analyses: Analysis[] }) {
-  const [selectedAnalysisId, setSelectedAnalysisId] = useState(analyses[0]?.id)
-  const selectedAnalysis = analyses.find((analysis) => analysis.id === selectedAnalysisId) || analyses[0]
+export default function DarkAnalysisDashboard({ analyses, projectRoom }: { analyses: Analysis[], projectRoom: ProjectRoom }) {
+  const [selectedAnalysisId, setSelectedAnalysisId] = useState(analyses[0]?.id);
+  const selectedAnalysis = analyses.find((analysis) => analysis.id === selectedAnalysisId) || analyses[0];
 
+ 
   const ratingDistributionData = {
     labels: ["5 Stars", "4 Stars", "3 Stars", "2 Stars", "1 Star"],
     datasets: [
@@ -141,18 +145,22 @@ export default function DarkAnalysisDashboard({ analyses }: { analyses: Analysis
     ],
   }
 
+  const topKeywords = selectedAnalysis.keywordAnalyses
+    .sort((a, b) => b.frequency - a.frequency)
+    .slice(0, 10)
+
   const keywordAnalysisData = {
-    labels: selectedAnalysis.keywordAnalyses.map((item) => item.keyword),
+    labels: topKeywords.map((item) => item.keyword),
     datasets: [
       {
         label: "Frequency",
-        data: selectedAnalysis.keywordAnalyses.map((item) => item.frequency),
+        data: topKeywords.map((item) => item.frequency),
         backgroundColor: chartColors.primary,
         borderRadius: 8,
       },
       {
         label: "Average Rating",
-        data: selectedAnalysis.keywordAnalyses.map((item) => item.associatedRatings[0] || 0),
+        data: topKeywords.map((item) => item.associatedRatings[0] || 0),
         backgroundColor: chartColors.secondary,
         borderRadius: 8,
       },
@@ -164,7 +172,7 @@ export default function DarkAnalysisDashboard({ analyses }: { analyses: Analysis
       <div className="max-w-[1400px] mx-auto space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-  <GetGreeting />
+            <GetGreeting />
             <p className="text-gray-400 mt-1">Track your performance and user feedback</p>
           </div>
           <div className="flex items-center gap-4 w-full md:w-auto">
@@ -271,6 +279,9 @@ export default function DarkAnalysisDashboard({ analyses }: { analyses: Analysis
               </div>
             </CardContent>
           </Card>
+
+          <FeedbackPieChart projectRoom={projectRoom} />
+                
         </div>
       </div>
     </div>
