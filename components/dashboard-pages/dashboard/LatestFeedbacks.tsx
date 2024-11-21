@@ -12,7 +12,7 @@ export default function LatestFeedbacks({
   const { feedbacks, isLoading, isError } = useFeedbacks(projectRoomId);
 
   return (
-    <div className="p-5 border border-[#141414] min-h-[calc(100dvh-200px)] max-h-[calc(100dvh-200px)] overflow-y-auto custom-scrollbar rounded-xl">
+    <div className="p-5 border border-[#141414] min-h-full max-h-[calc(100dvh-200px)] overflow-y-auto custom-scrollbar rounded-xl">
       <CardTitle className="text-2xl my-2 font-normal">
         Latest Feedbacks🔥
       </CardTitle>
@@ -31,7 +31,7 @@ export default function LatestFeedbacks({
                 new Date(b.createdAt || "").getTime() -
                 new Date(a.createdAt || "").getTime()
             )
-            .slice(0, 6)
+            .slice(0, 7)
             .map((feedback) => (
               <FeedbackItem key={feedback.id} feedback={feedback} />
             ))
