@@ -55,7 +55,7 @@ const getRoleColor = (role: string) => {
     case "admin":
       return "bg-emerald-500/10 text-emerald-500";
     case "developer":
-      return "bg-emerald-500/10 text-emerald-500";
+      return "bg-pink-500/10 text-pink-500";
     case "marketing":
       return "bg-pink-500/10 text-pink-500";
     default:
@@ -122,7 +122,7 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
   }
 
   return (
-    <div className="p-6 border border-[#141414] rounded-lg w-2xl">
+    <div className="p-6 border border-[#141414] rounded-lg w-2xl min-h-[calc(100dvh-200px)] max-h-[calc(100dvh-200px)] overflow-y-auto custom-scrollbar">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl my-2 flex items-center gap-2">
           Members{" "}
@@ -222,6 +222,9 @@ export default function Members({ projectRoom }: { projectRoom: ProjectRoom }) {
                     </SelectItem>
                     <SelectItem value="user" className="text-xs">
                       User
+                    </SelectItem>
+                    <SelectItem value="developer" className="text-xs">
+                      Developer
                     </SelectItem>
                   </SelectContent>
                 </Select>

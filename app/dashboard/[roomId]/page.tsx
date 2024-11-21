@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useProject } from "@/hooks/functions/useProject";
+import TeamPage from "@/components/dashboard-pages/team/TeamPage";
 
 function DashboardPage() {
   const params = useParams();
@@ -61,6 +62,10 @@ function DashboardPage() {
       {
         name: "Tasks",
         component: <Tasks projectRoom={projectRoom} />,
+      },
+      {
+        name: "Team Members",
+        component: <TeamPage projectRoom={projectRoom} />,
       },
     ];
 
